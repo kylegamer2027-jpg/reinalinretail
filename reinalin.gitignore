@@ -1,0 +1,11 @@
+# Ignore sensitive files
+db.php
+
+# Ignore uploaded images (too large)
+images/
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore PHP temp files
+*.log
