@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Reinalin Retail — Management System</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -505,6 +505,167 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
     font-weight: 800;
   }
 }
+/* ─── MOBILE RESPONSIVE ─── */
+@media (max-width: 768px) {
+
+  /* Hide sidebar by default on mobile */
+  .sb {
+    position: fixed;
+    left: -var(--sw);
+    top: 0;
+    bottom: 0;
+    z-index: 500;
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    box-shadow: var(--shadow-xl);
+  }
+  .sb.mobile-open {
+    transform: translateX(0);
+  }
+
+  /* Overlay when sidebar is open */
+  .sb-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 499;
+    backdrop-filter: blur(2px);
+  }
+  .sb-overlay.on { display: block; }
+
+  /* Main takes full width */
+  .main { width: 100%; }
+
+  /* Topbar */
+  .topbar { padding: 10px 14px; }
+  .tb-title { font-size: 13px; }
+
+  /* Content padding */
+  .content { padding: 12px 14px; }
+
+  /* Stats grid — 2 columns on mobile */
+  .sc { grid-template-columns: repeat(2,1fr) !important; }
+
+  /* Row2 — single column */
+  .row2 { grid-template-columns: 1fr !important; }
+
+  /* POS — single column */
+  .pos-wrap { grid-template-columns: 1fr !important; }
+
+  /* POS grid — 2 columns */
+  #pos-grid { grid-template-columns: repeat(2,1fr) !important; }
+
+  /* Cart panel — fixed at bottom */
+  .cp {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: auto;
+    max-height: 60vh;
+    border-radius: 16px 16px 0 0;
+    z-index: 400;
+    transform: translateY(calc(100% - 54px));
+    transition: transform .3s ease;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
+  }
+  .cp.cart-open {
+    transform: translateY(0);
+  }
+  .cp-hd { cursor: pointer; }
+
+  /* Staff cards — single column */
+  #staff-cards {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Customer cards — single column */
+  #cust-cards {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Attendance buttons — single column */
+  #att-staff-btns {
+    grid-template-columns: repeat(2,1fr) !important;
+  }
+
+  /* Form rows — single column */
+  .fr { grid-template-columns: 1fr !important; }
+  .fr3 { grid-template-columns: 1fr !important; }
+
+  /* Modal — full width */
+  .modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 16px 16px 0 0 !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    max-height: 90vh;
+  }
+  .modalbg {
+    align-items: flex-end !important;
+    padding: 0 !important;
+  }
+
+  /* Table — horizontal scroll */
+  .tbl { font-size: 11px; }
+  .tbl th, .tbl td { padding: 7px 8px; }
+
+  /* Hide some columns on mobile */
+  .tbl .hide-mobile { display: none; }
+
+  /* Page header */
+  .pg-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .pg-header > div:last-child {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  /* Reports tabs */
+  .rpt-tabs { flex-wrap: wrap; }
+
+  /* Dashboard period tabs */
+  #period-today, #period-week, #period-month, #period-all {
+    font-size: 10px;
+    padding: 5px;
+  }
+
+  /* Hamburger menu button */
+  .hamburger {
+    display: flex !important;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    background: transparent;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    margin-right: 8px;
+  }
+
+  /* Quick sale FAB — adjust position */
+  .quick-sale-fab {
+    bottom: 70px !important;
+  }
+}
+
+/* Hide hamburger on desktop */
+.hamburger { display: none; }
+
+@media (max-width: 480px) {
+  .sc { grid-template-columns: 1fr 1fr !important; }
+  .sk-val { font-size: 16px !important; }
+  #pos-grid { grid-template-columns: repeat(2,1fr) !important; }
+}
 </style>
 </head>
 <body>
@@ -574,7 +735,9 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
 
 <!-- ─── APP SHELL ─── -->
 <div class="shell" id="app" style="display:none">
-  <nav class="sb">
+  <div class="sb-overlay" id="sb-overlay" onclick="toggleMobileSidebar()"></div>
+  <nav class="sb" id="main-sidebar">
+  </nav>
     <div class="sb-logo">
       <div class="sb-brand">
         <div class="logo-wrap logo-sb" id="logo-sb">
@@ -621,7 +784,12 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
 
   <div class="main">
     <div class="topbar">
-      <span class="tb-title" id="pg-title">Dashboard</span>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="hamburger" onclick="toggleMobileSidebar()" title="Menu">
+      <i class="ti ti-menu-2"></i>
+    </button>
+    <span class="tb-title" id="pg-title">Dashboard</span>
+  </div>
       <div class="tb-right">
         <i class="ti ti-calendar"></i><span id="tb-date"></span>
         <button class="notif-btn" onclick="toggleNotifPanel()" id="notif-trigger">
@@ -2236,6 +2404,38 @@ async function simulateScan(){
     toast('📷 Scanned: ' + p.em + ' ' + p.name, 'success');
   }, 900);
 }
+// ─── MOBILE ───
+function toggleMobileSidebar(){
+  const sb      = document.getElementById('main-sidebar');
+  const overlay = document.getElementById('sb-overlay');
+  const isOpen  = sb.classList.toggle('mobile-open');
+  overlay.classList.toggle('on', isOpen);
+}
+
+// Close sidebar when nav item is clicked on mobile
+const origNav = nav;
+function nav(name, el){
+  if(window.innerWidth <= 768){
+    const sb      = document.getElementById('main-sidebar');
+    const overlay = document.getElementById('sb-overlay');
+    sb.classList.remove('mobile-open');
+    overlay.classList.remove('on');
+  }
+  origNav(name, el);
+}
+
+// Toggle cart on mobile
+function toggleMobileCart(){
+  if(window.innerWidth <= 768){
+    document.querySelector('.cp')?.classList.toggle('cart-open');
+  }
+}
+
+// Make cart header toggle cart on mobile
+document.addEventListener('DOMContentLoaded', () => {
+  const cpHd = document.querySelector('.cp-hd');
+  if(cpHd) cpHd.addEventListener('click', toggleMobileCart);
+});
 // ─── BACKUP ───
 async function openBackupModal(){
   document.getElementById('modal-backup').classList.add('on');
