@@ -612,8 +612,11 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
       <div class="ni" onclick="nav('transactions',this)"><i class="ti ti-list"></i>Transactions</div>
     </div>
     <div class="sb-bottom">
-      <button class="logout-btn" onclick="doLogout()"><i class="ti ti-logout"></i>Sign out</button>
-    </div>
+  <button class="btn bts admin-only" onclick="openBackupModal()" style="width:100%;justify-content:center;margin-bottom:8px;border-color:var(--border)">
+    <i class="ti ti-database-export"></i>Backup DB
+  </button>
+  <button class="logout-btn" onclick="doLogout()"><i class="ti ti-logout"></i>Sign out</button>
+</div>
   </nav>
 
   <div class="main">
@@ -1124,6 +1127,16 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
     </div>
     <div class="fg"><label class="fl">Re-order point</label><input class="fi" type="number" id="pf-reorder" placeholder="10" min="0"></div>
     <div class="fr">
+  <div class="fg">
+    <label class="fl">Expiry date (optional)</label>
+    <input class="fi" type="date" id="pf-expiry">
+  </div>
+  <div class="fg">
+    <label class="fl">Warn me before (days)</label>
+    <input class="fi" type="number" id="pf-expiry-alert" placeholder="30" min="1" value="30">
+  </div>
+</div>
+    <div class="fr">
   <div class="fg"><label class="fl">SKU (Stock Keeping Unit)</label><input class="fi" id="pf-sku" placeholder="e.g. BEV-001"></div>
   <div class="fg"><label class="fl">Barcode number</label><input class="fi" id="pf-barcode" placeholder="e.g. 4800029830023"></div>
 </div>
@@ -1202,6 +1215,36 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
     <div id="sf-user-msg" style="font-size:11px;margin-top:-8px;margin-bottom:8px;color:var(--text-tertiary)"></div>
     <div style="font-size:11px;color:var(--text-tertiary);background:var(--bg-secondary);padding:8px 10px;border-radius:8px;font-weight:500"><i class="ti ti-info-circle" style="font-size:12px"></i> If credentials are provided, this staff member can log in to the system.</div>
     <div class="ma"><button class="btn" onclick="closeModal('modal-add-staff')"><i class="ti ti-x"></i>Cancel</button><button class="btn bta" onclick="saveStaff()"><i class="ti ti-check"></i>Save staff member</button></div>
+  </div>
+</div>
+<!-- Backup Database -->
+<div class="modalbg" id="modal-backup">
+  <div class="modal" style="max-width:420px">
+    <h3><i class="ti ti-database-export"></i>Database Backup</h3>
+
+    <!-- Stats -->
+    <div style="background:var(--bg-secondary);border-radius:10px;padding:14px;margin-bottom:16px" id="backup-stats">
+      <div style="text-align:center;color:var(--text-tertiary);font-size:12px">
+        <i class="ti ti-loader" style="font-size:20px;display:block;margin-bottom:6px"></i>
+        Loading database info...
+      </div>
+    </div>
+
+    <div style="background:var(--info-bg);border-radius:10px;padding:12px;margin-bottom:16px;font-size:12px;color:var(--info-text)">
+      <i class="ti ti-info-circle" style="font-size:14px"></i>
+      This will download a <b>.sql file</b> containing all your data. Store it somewhere safe like Google Drive or USB.
+    </div>
+
+    <div style="font-size:11px;color:var(--text-secondary);margin-bottom:16px;font-weight:500">
+      💡 <b>Tip:</b> Do this regularly — daily or weekly — to prevent data loss.
+    </div>
+
+    <div class="ma">
+      <button class="btn" onclick="closeModal('modal-backup')">Cancel</button>
+      <button class="btn bta" onclick="downloadBackup()" id="backup-btn">
+        <i class="ti ti-download"></i>Download Backup
+      </button>
+    </div>
   </div>
 </div>
 <!-- Set Sales Target -->
@@ -1477,23 +1520,26 @@ async function checkStaffUsername(){
   msg.style.color = data.taken ? 'var(--danger)' : 'var(--success-text)';
 }
 async function loadProducts(){
-  const res = await fetch('api/products.php?action=list');
+  const res  = await fetch('api/products.php?action=list');
   const rows = await res.json();
   prods = rows.map(p => ({
-    id:      'p' + p.id,
-    _dbId:   parseInt(p.id),
-    name:    p.name,
-    cat:     p.category,
-    em:      p.emoji,
-    cost:    parseFloat(p.cost),
-    price:   parseFloat(p.price),
-    stock:   parseInt(p.stock),
-    reorder: parseInt(p.reorder_point),
-    img:     p.img || '',
-    sku:     p.sku || '',
-    barcode: p.barcode || ''
+    id:          'p' + p.id,
+    _dbId:       parseInt(p.id),
+    name:        p.name,
+    cat:         p.category,
+    em:          p.emoji,
+    cost:        parseFloat(p.cost),
+    price:       parseFloat(p.price),
+    stock:       parseInt(p.stock),
+    reorder:     parseInt(p.reorder_point),
+    img:         p.img || '',
+    sku:         p.sku || '',
+    barcode:     p.barcode || '',
+    expiry:      p.expiry_date || '',
+    expiryAlert: parseInt(p.expiry_alert_days) || 30
   }));
 }
+
 async function loadTransactions() {
   const res = await fetch('api/transactions.php?action=list');
   const rows = await res.json();
@@ -1729,8 +1775,48 @@ async function loadRestockLogs(){
     </tr>
   `).join('');
 }
+async function checkExpiryWarnings(){
+  const res1 = await fetch('api/products.php?action=expiring');
+  const res2 = await fetch('api/products.php?action=expired');
+  const expiring = await res1.json();
+  const expired  = await res2.json();
+
+  // Remove old expiry alert if exists
+  const old = document.getElementById('expiry-alert-bar');
+  if(old) old.remove();
+
+  if(!expiring.length && !expired.length) return;
+
+  const bar = document.createElement('div');
+  bar.id = 'expiry-alert-bar';
+
+  if(expired.length){
+    bar.className = 'alert-bar';
+    bar.style.background = 'var(--danger-bg)';
+    bar.style.borderColor = '#e2a0a0';
+    bar.style.color = 'var(--danger)';
+    bar.innerHTML = `<i class="ti ti-alert-circle"></i>
+      <span>⚠️ ${expired.length} product(s) have <b>expired</b>:
+      ${expired.slice(0,3).map(p => p.name).join(', ')}
+      </span>`;
+  } else {
+    bar.className = 'alert-bar';
+    bar.innerHTML = `<i class="ti ti-clock"></i>
+      <span>🕐 ${expiring.length} product(s) expiring soon:
+      ${expiring.slice(0,3).map(p => p.name + ' (' + p.expiry_date + ')').join(', ')}
+      </span>`;
+  }
+
+  const pgHeader = document.querySelector('#pg-inventory .pg-header');
+  pgHeader.insertAdjacentElement('afterend', bar);
+
+  // Also add notification
+  if(expired.length) addNotif('Expired products!', `${expired.length} product(s) have expired`);
+  else if(expiring.length) addNotif('Expiry warning', `${expiring.length} product(s) expiring soon`);
+}
 async function renderInv(){
   await loadRestockLogs();
+  await checkExpiryWarnings();
   const q=(document.getElementById('inv-srch').value||'').toLowerCase();
   const cat=document.getElementById('inv-cat');
   const flt=document.getElementById('inv-filter').value;
@@ -1747,16 +1833,20 @@ async function renderInv(){
     const mf=!flt||(flt==='low'&&p.stock>0&&p.stock<p.reorder)||(flt==='out'&&p.stock===0);
     return mq&&mc&&mf;
   });
-  const hl=(text,q)=>q?text.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark>$1</mark>'):text;
-  document.getElementById('inv-tbl').innerHTML=`<thead><tr><th>#</th><th>Product</th><th>Category</th><th>Cost</th><th>Price</th><th>Markup</th><th>Stock</th><th>Re-order</th><th>Status</th><th>Actions</th></tr></thead><tbody>${fp.length?fp.map((p,i)=>{
-    const st=p.stock===0?`<span class="bdg br">Out of stock</span>`:p.stock<p.reorder?`<span class="bdg bo">Low stock</span>`:`<span class="bdg bg">In stock</span>`;
+ const hl=(text,q)=>q?text.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark>$1</mark>'):text;
+const today=new Date().toISOString().split('T')[0];
+document.getElementById('inv-tbl').innerHTML=`<thead><tr><th>#</th><th>Product</th><th>Category</th><th>Cost</th><th>Price</th><th>Markup</th><th>Stock</th><th>Re-order</th><th>Expiry</th><th>Status</th><th>Actions</th></tr></thead><tbody>${fp.length?fp.map((p,i)=>{
+    const isExpired=p.expiry&&p.expiry<today;
+    const isExpiring=p.expiry&&!isExpired&&new Date(p.expiry)<=new Date(Date.now()+p.expiryAlert*86400000);
+    const st=p.stock===0?'<span class="bdg br">Out of stock</span>':p.stock<p.reorder?'<span class="bdg bo">Low stock</span>':'<span class="bdg bg">In stock</span>';
+    const expiryBadge=isExpired?'<span class="bdg br" style="margin-left:4px">Expired</span>':isExpiring?'<span class="bdg bo" style="margin-left:4px">Expiring soon</span>':'';
     const mkp=p.cost>0?Math.round((p.price-p.cost)/p.cost*100)+'%':'—';
     const bg=p.stock===0?'background:var(--danger-bg)':p.stock<p.reorder?'background:var(--warn-bg)':'';
     const thumb=p.img?`<img src="${p.img}" style="width:26px;height:26px;object-fit:cover;border-radius:5px;margin-right:5px;vertical-align:middle;border:1px solid var(--border)">`:p.em+' ';
-    return`<tr style="${bg}cursor:pointer" onclick="showProdDetail('${p.id}')"><td style="color:var(--text-tertiary);font-size:11px;font-family:'JetBrains Mono',monospace">${i+1}</td><td><span style="display:inline-flex;align-items:center">${thumb}<span style="font-weight:600">${hl(p.name,q)}</span></span></td><td>${p.cat}</td><td>${fmt(p.cost)}</td><td style="font-weight:700">${fmt(p.price)}</td><td>${mkp}</td><td style="font-weight:700;color:${p.stock===0?'var(--danger)':p.stock<p.reorder?'var(--warn-text)':'var(--text-primary)'}">${p.stock}</td><td>${p.reorder}</td><td>${st}</td><td onclick="event.stopPropagation()"><div style="display:flex;gap:4px"><button class="btn bts btg" onclick="openRestock('${p.id}')" title="Restock"><i class="ti ti-plus"></i></button><button class="btn bts" onclick="editProd('${p.id}')" title="Edit"><i class="ti ti-edit"></i></button><button class="btn bts btd" onclick="confirmDel('${p.id}')" title="Delete"><i class="ti ti-trash"></i></button></div></td></tr>`;
-  }).join(''):`<tr><td colspan="10"><div class="ec"><i class="ti ti-search"></i>No products match your filters</div></td></tr>`}</tbody>`;
+    const expColor=isExpired?'var(--danger)':isExpiring?'var(--warn-text)':'var(--text-secondary)';
+    return`<tr style="${bg}cursor:pointer" onclick="showProdDetail('${p.id}')"><td style="color:var(--text-tertiary);font-size:11px;font-family:'JetBrains Mono',monospace">${i+1}</td><td><span style="display:inline-flex;align-items:center">${thumb}<span style="font-weight:600">${hl(p.name,q)}</span></span></td><td>${p.cat}</td><td>${fmt(p.cost)}</td><td style="font-weight:700">${fmt(p.price)}</td><td>${mkp}</td><td style="font-weight:700;color:${p.stock===0?'var(--danger)':p.stock<p.reorder?'var(--warn-text)':'var(--text-primary)'}">${p.stock}</td><td>${p.reorder}</td><td style="font-size:11px;color:${expColor}">${p.expiry||'—'}</td><td>${st}${expiryBadge}</td><td onclick="event.stopPropagation()"><div style="display:flex;gap:4px"><button class="btn bts btg" onclick="openRestock('${p.id}')" title="Restock"><i class="ti ti-plus"></i></button><button class="btn bts" onclick="editProd('${p.id}')" title="Edit"><i class="ti ti-edit"></i></button><button class="btn bts btd" onclick="confirmDel('${p.id}')" title="Delete"><i class="ti ti-trash"></i></button></div></td></tr>`;
+  }).join(''):`<tr><td colspan="11"><div class="ec"><i class="ti ti-search"></i>No products match your filters</div></td></tr>`}</tbody>`;
 }
-
 // ─── PRODUCT DETAIL POPUP ───
 function showProdDetail(id){
   const p=prods.find(x=>x.id===id);if(!p)return;
@@ -2146,7 +2236,69 @@ async function simulateScan(){
     toast('📷 Scanned: ' + p.em + ' ' + p.name, 'success');
   }, 900);
 }
+// ─── BACKUP ───
+async function openBackupModal(){
+  document.getElementById('modal-backup').classList.add('on');
 
+  // Load stats
+  try {
+    const res   = await fetch('api/backup.php?action=stats');
+    const stats = await res.json();
+
+    document.getElementById('backup-stats').innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+        <div style="text-align:center;background:var(--bg-primary);border-radius:8px;padding:10px">
+          <div style="font-size:18px;font-weight:800;color:var(--acc)">${stats.tables}</div>
+          <div style="font-size:10px;color:var(--text-secondary);font-weight:600">Tables</div>
+        </div>
+        <div style="text-align:center;background:var(--bg-primary);border-radius:8px;padding:10px">
+          <div style="font-size:18px;font-weight:800;color:var(--success-text)">${stats.total_rows}</div>
+          <div style="font-size:10px;color:var(--text-secondary);font-weight:600">Total Records</div>
+        </div>
+        <div style="text-align:center;background:var(--bg-primary);border-radius:8px;padding:10px">
+          <div style="font-size:14px;font-weight:800;color:var(--text-primary)">${new Date().toLocaleDateString('en-PH')}</div>
+          <div style="font-size:10px;color:var(--text-secondary);font-weight:600">Today</div>
+        </div>
+      </div>
+      <div style="font-size:11px;color:var(--text-secondary)">
+        ${stats.stats.map(s =>
+          `<span style="display:inline-flex;align-items:center;gap:4px;margin:2px 4px 2px 0;background:var(--bg-primary);padding:2px 8px;border-radius:99px;font-weight:600">
+            ${s.table} <b style="color:var(--acc)">${s.rows}</b>
+          </span>`
+        ).join('')}
+      </div>`;
+  } catch(err){
+    document.getElementById('backup-stats').innerHTML = `
+      <div style="color:var(--danger);font-size:12px;text-align:center">
+        <i class="ti ti-alert-circle"></i> Could not load database stats
+      </div>`;
+  }
+}
+
+async function downloadBackup(){
+  const btn = document.getElementById('backup-btn');
+  btn.innerHTML = '<i class="ti ti-loader"></i>Preparing...';
+  btn.disabled  = true;
+
+  try {
+    const res  = await fetch('api/backup.php?action=download');
+    const blob = await res.blob();
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'reinalin_backup_' + new Date().toISOString().slice(0,10) + '.sql';
+    a.click();
+    URL.revokeObjectURL(url);
+
+    toast('Backup downloaded successfully! 💾', 'success');
+    closeModal('modal-backup');
+  } catch(err){
+    toast('Backup failed: ' + err.message, 'error');
+  }
+
+  btn.innerHTML = '<i class="ti ti-download"></i>Download Backup';
+  btn.disabled  = false;
+}
 // ─── SALES TARGETS ───
 async function loadTargets(){
   try {
@@ -3006,7 +3158,8 @@ function showTxnDetail(id){
 function openModal(n){
   if(n==='add-prod'){
     editProdId=null;pendingProdImg='';
-    ['pf-name','pf-cost','pf-markup','pf-price','pf-stock','pf-reorder','pf-em','pf-sku','pf-barcode'].forEach(id=>document.getElementById(id).value='');
+    ['pf-name','pf-cost','pf-markup','pf-price','pf-stock','pf-reorder','pf-em','pf-sku','pf-barcode','pf-expiry'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('pf-expiry-alert').value = 30;
     document.getElementById('prod-mtitle').textContent='Add product';
     document.getElementById('pf-img-preview').style.display='none';
     document.getElementById('pf-img-preview').src='';
@@ -3060,7 +3213,9 @@ async function saveProd(){
     reorder_point: parseInt(document.getElementById('pf-reorder').value) || 10,
     img: pendingProdImg || '',
     sku: document.getElementById('pf-sku').value.trim() || '',
-    barcode: document.getElementById('pf-barcode').value.trim() || ''
+    barcode: document.getElementById('pf-barcode').value.trim() || '',
+    expiry_date: document.getElementById('pf-expiry').value || null,
+    expiry_alert_days: parseInt(document.getElementById('pf-expiry-alert').value) || 30
 };
 
   if(editProdId){
@@ -3101,6 +3256,8 @@ function editProd(id){
   else{preview.style.display='none';preview.src='';document.getElementById('prod-img-zone').style.borderColor='';}
   document.getElementById('pf-sku').value     = p.sku || '';
   document.getElementById('pf-barcode').value = p.barcode || '';
+  document.getElementById('pf-expiry').value       = p.expiry || '';
+  document.getElementById('pf-expiry-alert').value = p.expiryAlert || 30;
   document.getElementById('prod-mtitle').textContent='Edit product';
   document.getElementById('modal-add-prod').classList.add('on');
 }
@@ -3230,3 +3387,4 @@ document.body.insertAdjacentHTML('beforeend','<button class="quick-sale-fab" id=
 <div id="print-area" style="display:none"></div>
 </body>
 </html>
+}
