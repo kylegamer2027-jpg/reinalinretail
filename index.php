@@ -699,7 +699,8 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
 <input type="file" id="prod-img-input" accept="image/*" style="display:none" onchange="handleProdImageUpload(this)">
 
 <!-- ─── APP SHELL ─── -->
-<div class="shell" id="app" style="display:none">
+<div class="shell" id="app" style="display:none;overflow:hidden">
+</div>
   <div class="sb-overlay" id="sb-overlay" onclick="toggleMobileSidebar()"></div>
   <nav class="sb" id="main-sidebar">
   </nav>
@@ -2375,19 +2376,23 @@ function toggleMobileSidebar(){
   const overlay = document.getElementById('sb-overlay');
   const isOpen  = sb.classList.toggle('mobile-open');
   overlay.classList.toggle('on', isOpen);
+
+  if(isOpen){
+    sb.style.transform = 'translateX(0)';
+  } else {
+    sb.style.transform = 'translateX(-100%)';
+  }
 }
 
-// Close sidebar when nav item is clicked on mobile
-const origNav = nav;
-function nav(name, el){
-  if(window.innerWidth <= 768){
-    const sb      = document.getElementById('main-sidebar');
-    const overlay = document.getElementById('sb-overlay');
-    sb.classList.remove('mobile-open');
-    overlay.classList.remove('on');
-  }
-  origNav(name, el);
-}
+// Close sidebar on mobile when nav item clicked
+document.querySelectorAll('.ni').forEach(item => {
+  item.addEventListener('click', () => {
+    if(window.innerWidth <= 768){
+      document.getElementById('main-sidebar').classList.remove('mobile-open');
+      document.getElementById('sb-overlay').classList.remove('on');
+    }
+  });
+});
 
 // Toggle cart on mobile
 function toggleMobileCart(){
@@ -3547,6 +3552,27 @@ function downloadCSV(name,rows){
 
 // ─── FAB ───
 document.body.insertAdjacentHTML('beforeend','<button class="quick-sale-fab" id="quick-sale-fab" onclick="nav(\'pos\',document.querySelectorAll(\'.ni\')[2])" title="Quick sale"><i class="ti ti-receipt"></i></button>');
+// ─── MOBILE INIT ───
+function initMobile(){
+  if(window.innerWidth <= 768){
+    // Force sidebar off screen
+    const sb = document.getElementById('main-sidebar');
+    if(sb){
+      sb.style.position = 'fixed';
+      sb.style.transform = 'translateX(-100%)';
+      sb.style.zIndex = '500';
+      sb.style.transition = 'transform .25s ease';
+    }
+    // Force main to full width
+    const main = document.querySelector('.main');
+    if(main) main.style.width = '100%';
+  }
+}
+// Run on load and resize
+window.addEventListener('resize', initMobile);
+window.addEventListener('load', initMobile);
+document.addEventListener('DOMContentLoaded', initMobile);
+initMobile();
 </script>
 <!-- ─── PRINT AREA ─── -->
 <div id="print-area" style="display:none"></div>
