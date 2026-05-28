@@ -25,26 +25,44 @@ if ($method === 'GET' && $action === 'find_barcode') {
     $stmt = $pdo->prepare("SELECT * FROM products WHERE barcode = ? OR sku = ?");
     $stmt->execute([$barcode, $barcode]);
     $product = $stmt->fetch();
-    if ($product) {
-        echo json_encode(['found' => true, 'product' => $product]);
-    } else {
-        echo json_encode(['found' => false]);
-    }
+    echo json_encode($product ? ['found' => true, 'product' => $product] : ['found' => false]);
+    exit;
+}
+
+// ── Get expiring products ──
+if ($method === 'GET' && $action === 'expiring') {
+    $stmt = $pdo->query("SELECT * FROM products
+                         WHERE expiry_date IS NOT NULL
+                         AND expiry_date <= DATE_ADD(CURDATE(), INTERVAL expiry_alert_days DAY)
+                         ORDER BY expiry_date ASC");
+    echo json_encode($stmt->fetchAll());
+    exit;
+}
+
+// ── Get expired products ──
+if ($method === 'GET' && $action === 'expired') {
+    $stmt = $pdo->query("SELECT * FROM products
+                         WHERE expiry_date IS NOT NULL
+                         AND expiry_date < CURDATE()
+                         ORDER BY expiry_date ASC");
+    echo json_encode($stmt->fetchAll());
     exit;
 }
 
 // ── Add product ──
 if ($method === 'POST' && $action === 'add') {
     $stmt = $pdo->prepare("INSERT INTO products
-        (name, category, emoji, cost, price, stock, reorder_point, img, sku, barcode)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        (name, category, emoji, cost, price, stock, reorder_point, img, sku, barcode, expiry_date, expiry_alert_days)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([
         $data['name'], $data['category'], $data['emoji'] ?? '📦',
         $data['cost'] ?? 0, $data['price'],
         $data['stock'] ?? 0, $data['reorder_point'] ?? 10,
         $data['img'] ?? '',
         $data['sku'] ?: null,
-        $data['barcode'] ?: null
+        $data['barcode'] ?: null,
+        $data['expiry_date'] ?: null,
+        $data['expiry_alert_days'] ?? 30
     ]);
     echo json_encode(['success' => true, 'id' => $pdo->lastInsertId()]);
     exit;
@@ -54,7 +72,8 @@ if ($method === 'POST' && $action === 'add') {
 if ($method === 'POST' && $action === 'edit') {
     $stmt = $pdo->prepare("UPDATE products SET
         name=?, category=?, emoji=?, cost=?, price=?,
-        stock=?, reorder_point=?, img=?, sku=?, barcode=?
+        stock=?, reorder_point=?, img=?, sku=?, barcode=?,
+        expiry_date=?, expiry_alert_days=?
         WHERE id=?");
     $stmt->execute([
         $data['name'], $data['category'], $data['emoji'] ?? '📦',
@@ -63,6 +82,8 @@ if ($method === 'POST' && $action === 'edit') {
         $data['img'] ?? '',
         $data['sku'] ?: null,
         $data['barcode'] ?: null,
+        $data['expiry_date'] ?: null,
+        $data['expiry_alert_days'] ?? 30,
         $data['id']
     ]);
     echo json_encode(['success' => true]);

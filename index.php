@@ -694,6 +694,43 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
     <div class="sk-val" id="d-utang">₱0</div>
   </div>
 </div>
+<!-- Sales Targets -->
+<div class="card" style="margin-bottom:14px">
+  <div class="card-hd">
+    🎯 Sales Targets
+    <button class="btn bts" onclick="openTargetModal()"><i class="ti ti-settings"></i>Set targets</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    <!-- Daily target -->
+    <div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:12px;font-weight:700;color:var(--text-primary)">📅 Daily Target</span>
+        <span style="font-size:12px;font-weight:800;color:var(--acc)" id="daily-pct">0%</span>
+      </div>
+      <div style="height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin-bottom:6px">
+        <div id="daily-bar" style="height:100%;width:0%;border-radius:5px;transition:width .8s ease;background:linear-gradient(90deg,#E8700A,#B85508)"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary)">
+        <span id="daily-sales-amt">₱0 achieved</span>
+        <span id="daily-target-amt">Goal: ₱0</span>
+      </div>
+    </div>
+    <!-- Monthly target -->
+    <div>
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
+        <span style="font-size:12px;font-weight:700;color:var(--text-primary)">🗓️ Monthly Target</span>
+        <span style="font-size:12px;font-weight:800;color:var(--acc)" id="monthly-pct">0%</span>
+      </div>
+      <div style="height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin-bottom:6px">
+        <div id="monthly-bar" style="height:100%;width:0%;border-radius:5px;transition:width .8s ease;background:linear-gradient(90deg,#1D9E75,#116b4e)"></div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary)">
+        <span id="monthly-sales-amt">₱0 achieved</span>
+        <span id="monthly-target-amt">Goal: ₱0</span>
+      </div>
+    </div>
+  </div>
+</div>
         <div class="row2">
           <div class="card"><div class="card-hd">Weekly Sales <span class="bdg bo">7 days</span></div><div class="ch"><canvas id="ch-sales"></canvas></div></div>
           <div class="card"><div class="card-hd">Sales by Category</div><div class="ch"><canvas id="ch-cat"></canvas></div></div>
@@ -1165,6 +1202,26 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
     <div id="sf-user-msg" style="font-size:11px;margin-top:-8px;margin-bottom:8px;color:var(--text-tertiary)"></div>
     <div style="font-size:11px;color:var(--text-tertiary);background:var(--bg-secondary);padding:8px 10px;border-radius:8px;font-weight:500"><i class="ti ti-info-circle" style="font-size:12px"></i> If credentials are provided, this staff member can log in to the system.</div>
     <div class="ma"><button class="btn" onclick="closeModal('modal-add-staff')"><i class="ti ti-x"></i>Cancel</button><button class="btn bta" onclick="saveStaff()"><i class="ti ti-check"></i>Save staff member</button></div>
+  </div>
+</div>
+<!-- Set Sales Target -->
+<div class="modalbg" id="modal-target">
+  <div class="modal" style="max-width:380px">
+    <h3><i class="ti ti-target"></i>Set Sales Targets</h3>
+    <div class="fg">
+      <label class="fl">Daily Sales Target (₱)</label>
+      <input class="fi" type="number" id="tgt-daily" placeholder="e.g. 2000" min="0">
+      <div style="font-size:11px;color:var(--text-secondary);margin-top:4px">How much you want to sell per day</div>
+    </div>
+    <div class="fg">
+      <label class="fl">Monthly Sales Target (₱)</label>
+      <input class="fi" type="number" id="tgt-monthly" placeholder="e.g. 50000" min="0">
+      <div style="font-size:11px;color:var(--text-secondary);margin-top:4px">How much you want to sell this month</div>
+    </div>
+    <div class="ma">
+      <button class="btn" onclick="closeModal('modal-target')">Cancel</button>
+      <button class="btn bta" onclick="saveTargets()"><i class="ti ti-check"></i>Save targets</button>
+    </div>
   </div>
 </div>
 <!-- Add/Edit Customer -->
@@ -1640,6 +1697,7 @@ async function renderDash(){
 
   updateDashStats();
   await loadTransactions();
+  await loadTargets();
 
   // Recent transactions table
   document.getElementById('d-txn-tbl').innerHTML=`<thead><tr><th>ID</th><th>Items</th><th>Total</th><th>Method</th><th>Staff</th><th>Date</th><th>Time</th></tr></thead><tbody>${txns.slice(0,5).map(t=>`<tr style="cursor:pointer" onclick="showTxnDetail('${t.id}')"><td style="color:var(--acc);font-weight:700;font-family:'JetBrains Mono',monospace">${t.id}</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.items.map(i=>i.qty+'× '+i.name).join(', ')}</td><td style="font-weight:700">${fmt(t.total)}</td><td><span class="bdg ${t.pay==='Cash'?'bg':t.pay==='Utang'?'bo':'bb'}">${t.pay}</span></td><td>${t.staff}</td><td>${t.date}</td><td>${t.time}</td></tr>`).join('')}</tbody>`;
@@ -2089,6 +2147,68 @@ async function simulateScan(){
   }, 900);
 }
 
+// ─── SALES TARGETS ───
+async function loadTargets(){
+  try {
+    const res  = await fetch('api/targets.php?action=get');
+    const data = await res.json();
+
+    // Daily progress
+    const dailyPct = data.daily_pct || 0;
+    document.getElementById('daily-pct').textContent        = dailyPct + '%';
+    document.getElementById('daily-bar').style.width        = dailyPct + '%';
+    document.getElementById('daily-bar').style.background   = dailyPct >= 100
+      ? 'linear-gradient(90deg,#1D9E75,#116b4e)'
+      : 'linear-gradient(90deg,#E8700A,#B85508)';
+    document.getElementById('daily-sales-amt').textContent  = fmt(data.daily_sales) + ' achieved';
+    document.getElementById('daily-target-amt').textContent = 'Goal: ' + fmt(data.daily_target);
+
+    // Monthly progress
+    const monthlyPct = data.monthly_pct || 0;
+    document.getElementById('monthly-pct').textContent        = monthlyPct + '%';
+    document.getElementById('monthly-bar').style.width        = monthlyPct + '%';
+    document.getElementById('monthly-bar').style.background   = monthlyPct >= 100
+      ? 'linear-gradient(90deg,#E8700A,#B85508)'
+      : 'linear-gradient(90deg,#1D9E75,#116b4e)';
+    document.getElementById('monthly-sales-amt').textContent  = fmt(data.monthly_sales) + ' achieved';
+    document.getElementById('monthly-target-amt').textContent = 'Goal: ' + fmt(data.monthly_target);
+
+    // Show congrats if target hit
+    if(dailyPct >= 100) toast('🎉 Daily sales target reached!', 'success');
+    if(monthlyPct >= 100) toast('🎉 Monthly sales target reached!', 'success');
+
+  } catch(err){
+    console.error('loadTargets error:', err);
+  }
+}
+
+function openTargetModal(){
+  document.getElementById('modal-target').classList.add('on');
+}
+
+async function saveTargets(){
+  const daily   = parseFloat(document.getElementById('tgt-daily').value);
+  const monthly = parseFloat(document.getElementById('tgt-monthly').value);
+
+  if(!daily || daily <= 0)  { toast('Enter a valid daily target.','error'); return; }
+  if(!monthly || monthly <= 0){ toast('Enter a valid monthly target.','error'); return; }
+
+  await fetch('api/targets.php?action=update', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ type:'daily', amount: daily, created_by: currentUser?.name })
+  });
+
+  await fetch('api/targets.php?action=update', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ type:'monthly', amount: monthly, created_by: currentUser?.name })
+  });
+
+  toast('Targets updated ✅');
+  closeModal('modal-target');
+  await loadTargets();
+}
 // ─── ATTENDANCE ───
 async function renderAttendance(){
   const today = new Date().toISOString().split('T')[0];
