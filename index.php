@@ -506,12 +506,20 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
   }
 }
 /* ─── MOBILE RESPONSIVE ─── */
-@media (max-width: 768px) {
+.hamburger { display: none; }
+.sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 499; backdrop-filter: blur(2px); }
+.sb-overlay.on { display: block; }
 
-  /* Hide sidebar by default on mobile */
+@media (max-width: 768px) {
+  :root { --sw: 220px; }
+
+  /* Shell */
+  .shell { overflow: hidden; }
+
+  /* Sidebar hidden off screen */
   .sb {
-    position: fixed;
-    left: -var(--sw);
+    position: fixed !important;
+    left: 0;
     top: 0;
     bottom: 0;
     z-index: 500;
@@ -519,125 +527,16 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
     transition: transform .25s ease;
     box-shadow: var(--shadow-xl);
   }
-  .sb.mobile-open {
-    transform: translateX(0);
-  }
-
-  /* Overlay when sidebar is open */
-  .sb-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 499;
-    backdrop-filter: blur(2px);
-  }
-  .sb-overlay.on { display: block; }
+  .sb.mobile-open { transform: translateX(0) !important; }
 
   /* Main takes full width */
-  .main { width: 100%; }
+  .main { width: 100% !important; flex: 1; }
 
   /* Topbar */
   .topbar { padding: 10px 14px; }
   .tb-title { font-size: 13px; }
 
-  /* Content padding */
-  .content { padding: 12px 14px; }
-
-  /* Stats grid — 2 columns on mobile */
-  .sc { grid-template-columns: repeat(2,1fr) !important; }
-
-  /* Row2 — single column */
-  .row2 { grid-template-columns: 1fr !important; }
-
-  /* POS — single column */
-  .pos-wrap { grid-template-columns: 1fr !important; }
-
-  /* POS grid — 2 columns */
-  #pos-grid { grid-template-columns: repeat(2,1fr) !important; }
-
-  /* Cart panel — fixed at bottom */
-  .cp {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: auto;
-    max-height: 60vh;
-    border-radius: 16px 16px 0 0;
-    z-index: 400;
-    transform: translateY(calc(100% - 54px));
-    transition: transform .3s ease;
-    box-shadow: 0 -4px 24px rgba(0,0,0,0.15);
-  }
-  .cp.cart-open {
-    transform: translateY(0);
-  }
-  .cp-hd { cursor: pointer; }
-
-  /* Staff cards — single column */
-  #staff-cards {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* Customer cards — single column */
-  #cust-cards {
-    grid-template-columns: 1fr !important;
-  }
-
-  /* Attendance buttons — single column */
-  #att-staff-btns {
-    grid-template-columns: repeat(2,1fr) !important;
-  }
-
-  /* Form rows — single column */
-  .fr { grid-template-columns: 1fr !important; }
-  .fr3 { grid-template-columns: 1fr !important; }
-
-  /* Modal — full width */
-  .modal {
-    width: 100% !important;
-    max-width: 100% !important;
-    border-radius: 16px 16px 0 0 !important;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: 0;
-    max-height: 90vh;
-  }
-  .modalbg {
-    align-items: flex-end !important;
-    padding: 0 !important;
-  }
-
-  /* Table — horizontal scroll */
-  .tbl { font-size: 11px; }
-  .tbl th, .tbl td { padding: 7px 8px; }
-
-  /* Hide some columns on mobile */
-  .tbl .hide-mobile { display: none; }
-
-  /* Page header */
-  .pg-header {
-    flex-direction: column;
-    gap: 10px;
-  }
-  .pg-header > div:last-child {
-    width: 100%;
-    flex-wrap: wrap;
-  }
-
-  /* Reports tabs */
-  .rpt-tabs { flex-wrap: wrap; }
-
-  /* Dashboard period tabs */
-  #period-today, #period-week, #period-month, #period-all {
-    font-size: 10px;
-    padding: 5px;
-  }
-
-  /* Hamburger menu button */
+  /* Hamburger visible */
   .hamburger {
     display: flex !important;
     width: 34px;
@@ -649,21 +548,87 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
     align-items: center;
     justify-content: center;
     color: var(--text-secondary);
-    margin-right: 8px;
+    flex-shrink: 0;
   }
 
-  /* Quick sale FAB — adjust position */
-  .quick-sale-fab {
-    bottom: 70px !important;
+  /* Content */
+  .content { padding: 12px; }
+
+  /* Stats — 2 columns */
+  .sc { grid-template-columns: repeat(2,1fr) !important; gap: 8px !important; }
+
+  /* Charts — single column */
+  .row2 { grid-template-columns: 1fr !important; }
+
+  /* POS layout */
+  .pos-wrap { grid-template-columns: 1fr !important; }
+  #pos-grid { grid-template-columns: repeat(2,1fr) !important; gap: 6px !important; }
+
+  /* Cart on mobile */
+  .cp {
+    position: fixed !important;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: auto !important;
+    max-height: 65vh;
+    border-radius: 16px 16px 0 0 !important;
+    z-index: 400;
+    transform: translateY(calc(100% - 52px));
+    transition: transform .3s ease;
+    box-shadow: 0 -4px 24px rgba(0,0,0,0.2);
   }
+  .cp.cart-open { transform: translateY(0) !important; }
+  .cp-hd { cursor: pointer; }
+
+  /* Cards */
+  #staff-cards { grid-template-columns: 1fr !important; }
+  #cust-cards { grid-template-columns: 1fr !important; }
+  #att-staff-btns { grid-template-columns: repeat(2,1fr) !important; }
+
+  /* Forms */
+  .fr { grid-template-columns: 1fr !important; }
+  .fr3 { grid-template-columns: 1fr 1fr !important; }
+
+  /* Modals slide up from bottom */
+  .modalbg { align-items: flex-end !important; padding: 0 !important; }
+  .modal {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 16px 16px 0 0 !important;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  /* Tables */
+  .tbl { font-size: 11px; }
+  .tbl th, .tbl td { padding: 6px 8px; white-space: nowrap; }
+
+  /* Page header */
+  .pg-header { flex-direction: column; gap: 8px; }
+  .pg-header > div:last-child { width: 100%; flex-wrap: wrap; }
+
+  /* Reports */
+  .rpt-tabs { flex-wrap: wrap; }
+  .rt { font-size: 11px; padding: 6px; }
+
+  /* Dashboard tabs */
+  #period-today, #period-week, #period-month, #period-all {
+    font-size: 10px;
+    padding: 5px 4px;
+  }
+
+  /* FAB */
+  .quick-sale-fab { bottom: 70px !important; right: 16px !important; }
+
+  /* Stat values */
+  .sk-val { font-size: 17px !important; }
+  .sk { padding: 12px !important; }
 }
-
-/* Hide hamburger on desktop */
-.hamburger { display: none; }
 
 @media (max-width: 480px) {
   .sc { grid-template-columns: 1fr 1fr !important; }
-  .sk-val { font-size: 16px !important; }
+  .fr3 { grid-template-columns: 1fr !important; }
   #pos-grid { grid-template-columns: repeat(2,1fr) !important; }
 }
 </style>
