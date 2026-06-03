@@ -866,19 +866,6 @@ async function simulateScan(){
     toast('📷 Scanned: ' + p.em + ' ' + p.name, 'success');
   }, 900);
 }
-
-// Toggle cart on mobile
-function toggleMobileCart(){
-  if(window.innerWidth <= 768){
-    document.querySelector('.cp')?.classList.toggle('cart-open');
-  }
-}
-
-// Make cart header toggle cart on mobile
-document.addEventListener('DOMContentLoaded', () => {
-  const cpHd = document.querySelector('.cp-hd');
-  if(cpHd) cpHd.addEventListener('click', toggleMobileCart);
-});
 // ─── BACKUP ───
 async function openBackupModal(){
   document.getElementById('modal-backup').classList.add('on');
@@ -2025,26 +2012,3 @@ function downloadCSV(name,rows){
 
 // ─── FAB ───
 document.body.insertAdjacentHTML('beforeend','<button class="quick-sale-fab" id="quick-sale-fab" onclick="nav(\'pos\',document.querySelectorAll(\'.ni\')[2])" title="Quick sale"><i class="ti ti-receipt"></i></button>');
-
-// ─── MOBILE INIT ───
-function toggleMobileSidebar(){
-  const sb      = document.getElementById('main-sidebar');
-  const overlay = document.getElementById('sb-overlay');
-  const isOpen  = sb.classList.toggle('mobile-open');
-  overlay.classList.toggle('on', isOpen);
-  if(isOpen){
-    sb.style.transform = 'translateX(0)';
-  } else {
-    sb.style.transform = 'translateX(-100%)';
-  }
-}
-
-// Close sidebar on mobile when nav item clicked
-document.querySelectorAll('.ni').forEach(item => {
-  item.addEventListener('click', () => {
-    if(window.innerWidth <= 768){
-      document.getElementById('main-sidebar').classList.remove('mobile-open');
-      document.getElementById('sb-overlay').classList.remove('on');
-    }
-  });
-});
