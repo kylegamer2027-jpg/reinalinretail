@@ -505,131 +505,32 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
     font-weight: 800;
   }
 }
-/* ─── MOBILE RESPONSIVE ─── */
-.hamburger { display: none; }
-.sb-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 499; backdrop-filter: blur(2px); }
-.sb-overlay.on { display: block; }
-
+/* ─── MOBILE ─── */
 @media (max-width: 768px) {
-  :root { --sw: 220px; }
-
-  /* Shell */
-  .shell { overflow: hidden; }
-
-  /* Sidebar hidden off screen */
-  .sb {
-    position: fixed !important;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    z-index: 500;
-    transform: translateX(-100%);
-    transition: transform .25s ease;
-    box-shadow: var(--shadow-xl);
-  }
-  .sb.mobile-open { transform: translateX(0) !important; }
-
-  /* Main takes full width */
-  .main { width: 100% !important; flex: 1; }
-
-  /* Topbar */
-  .topbar { padding: 10px 14px; }
-  .tb-title { font-size: 13px; }
-
-  /* Hamburger visible */
-  .hamburger {
-    display: flex !important;
-    width: 34px;
-    height: 34px;
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    background: transparent;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-secondary);
-    flex-shrink: 0;
-  }
-
-  /* Content */
+  body { overflow: auto; }
+  .shell { flex-direction: column; height: auto; min-height: 100vh; }
+  .sb { width: 100% !important; height: auto; border-right: none; border-bottom: 0.5px solid var(--border); }
+  .nav-sec { display: flex; flex-wrap: wrap; padding: 6px; }
+  .ni { border-left: none !important; border-radius: 8px !important; margin: 2px !important; flex: 0 0 auto; }
+  .main { min-width: 0; }
   .content { padding: 12px; }
-
-  /* Stats — 2 columns */
   .sc { grid-template-columns: repeat(2,1fr) !important; gap: 8px !important; }
-
-  /* Charts — single column */
   .row2 { grid-template-columns: 1fr !important; }
-
-  /* POS layout */
   .pos-wrap { grid-template-columns: 1fr !important; }
-  #pos-grid { grid-template-columns: repeat(2,1fr) !important; gap: 6px !important; }
-
-  /* Cart on mobile */
-  .cp {
-    position: fixed !important;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: auto !important;
-    max-height: 65vh;
-    border-radius: 16px 16px 0 0 !important;
-    z-index: 400;
-    transform: translateY(calc(100% - 52px));
-    transition: transform .3s ease;
-    box-shadow: 0 -4px 24px rgba(0,0,0,0.2);
-  }
-  .cp.cart-open { transform: translateY(0) !important; }
-  .cp-hd { cursor: pointer; }
-
-  /* Cards */
-  #staff-cards { grid-template-columns: 1fr !important; }
-  #cust-cards { grid-template-columns: 1fr !important; }
-  #att-staff-btns { grid-template-columns: repeat(2,1fr) !important; }
-
-  /* Forms */
+  #pos-grid { grid-template-columns: repeat(2,1fr) !important; }
+  .cp { position: static !important; height: auto !important; }
   .fr { grid-template-columns: 1fr !important; }
   .fr3 { grid-template-columns: 1fr 1fr !important; }
-
-  /* Modals slide up from bottom */
-  .modalbg { align-items: flex-end !important; padding: 0 !important; }
-  .modal {
-    width: 100% !important;
-    max-width: 100% !important;
-    border-radius: 16px 16px 0 0 !important;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-
-  /* Tables */
-  .tbl { font-size: 11px; }
-  .tbl th, .tbl td { padding: 6px 8px; white-space: nowrap; }
-
-  /* Page header */
+  #staff-cards { grid-template-columns: 1fr !important; }
+  #cust-cards { grid-template-columns: 1fr !important; }
+  .modal { max-width: 95vw !important; }
   .pg-header { flex-direction: column; gap: 8px; }
-  .pg-header > div:last-child { width: 100%; flex-wrap: wrap; }
-
-  /* Reports */
-  .rpt-tabs { flex-wrap: wrap; }
-  .rt { font-size: 11px; padding: 6px; }
-
-  /* Dashboard tabs */
-  #period-today, #period-week, #period-month, #period-all {
-    font-size: 10px;
-    padding: 5px 4px;
-  }
-
-  /* FAB */
-  .quick-sale-fab { bottom: 70px !important; right: 16px !important; }
-
-  /* Stat values */
-  .sk-val { font-size: 17px !important; }
-  .sk { padding: 12px !important; }
 }
 
 @media (max-width: 480px) {
   .sc { grid-template-columns: 1fr 1fr !important; }
   .fr3 { grid-template-columns: 1fr !important; }
-  #pos-grid { grid-template-columns: repeat(2,1fr) !important; }
+  .sk-val { font-size: 16px !important; }
 }
 </style>
 </head>
@@ -700,9 +601,7 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
 
 <!-- ─── APP SHELL ─── -->
 <div class="shell" id="app" style="display:none;overflow:hidden">
-</div>
-  <div class="sb-overlay" id="sb-overlay" onclick="toggleMobileSidebar()"></div>
-  <nav class="sb" id="main-sidebar">
+  <nav class="sb" id="main-sidebar"></nav>
   </nav>
     <div class="sb-logo">
       <div class="sb-brand">
@@ -745,17 +644,13 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
     <i class="ti ti-database-export"></i>Backup DB
   </button>
   <button class="logout-btn" onclick="doLogout()"><i class="ti ti-logout"></i>Sign out</button>
-</div>
+  </div>
+</div> 
   </nav>
 
   <div class="main">
     <div class="topbar">
-  <div style="display:flex;align-items:center;gap:8px">
-    <button class="hamburger" onclick="toggleMobileSidebar()" title="Menu">
-      <i class="ti ti-menu-2"></i>
-    </button>
-    <span class="tb-title" id="pg-title">Dashboard</span>
-  </div>
+  <span class="tb-title" id="pg-title">Dashboard</span>
       <div class="tb-right">
         <i class="ti ti-calendar"></i><span id="tb-date"></span>
         <button class="notif-btn" onclick="toggleNotifPanel()" id="notif-trigger">
@@ -1212,13 +1107,19 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
       <button class="btn" onclick="clearTxnFilters()"><i class="ti ti-x"></i>Clear</button>
     </div>
   </div>
-  <div class="card" style="padding:0;overflow:hidden"><div style="overflow-x:auto"><table class="tbl" id="txn-tbl"></table></div></div>
+  <div class="card" style="padding:0;overflow:hidden"><div style="overflow-x:auto"><table class="tbl" id="txn-tbl"></table>
+    </div>
+  </div>
 </div>
+
+    </div> <!-- closes .content -->
+  </div> <!-- closes .main -->
+</div> <!-- closes #app shell -->
 
 <!-- ─── MODALS ─── -->
 
 <!-- Product detail popup -->
-<div class="modalbg" id="modal-prod-detail">
+<div class="modalbg" id="modal-prod-detail"></div>
   <div class="modal prod-detail-modal">
     <div class="pdm-hero" id="pdm-hero">
       <span id="pdm-em" style="font-size:64px"></span>
@@ -2370,29 +2271,6 @@ async function simulateScan(){
     toast('📷 Scanned: ' + p.em + ' ' + p.name, 'success');
   }, 900);
 }
-// ─── MOBILE ───
-function toggleMobileSidebar(){
-  const sb      = document.getElementById('main-sidebar');
-  const overlay = document.getElementById('sb-overlay');
-  const isOpen  = sb.classList.toggle('mobile-open');
-  overlay.classList.toggle('on', isOpen);
-
-  if(isOpen){
-    sb.style.transform = 'translateX(0)';
-  } else {
-    sb.style.transform = 'translateX(-100%)';
-  }
-}
-
-// Close sidebar on mobile when nav item clicked
-document.querySelectorAll('.ni').forEach(item => {
-  item.addEventListener('click', () => {
-    if(window.innerWidth <= 768){
-      document.getElementById('main-sidebar').classList.remove('mobile-open');
-      document.getElementById('sb-overlay').classList.remove('on');
-    }
-  });
-});
 
 // Toggle cart on mobile
 function toggleMobileCart(){
@@ -3552,30 +3430,32 @@ function downloadCSV(name,rows){
 
 // ─── FAB ───
 document.body.insertAdjacentHTML('beforeend','<button class="quick-sale-fab" id="quick-sale-fab" onclick="nav(\'pos\',document.querySelectorAll(\'.ni\')[2])" title="Quick sale"><i class="ti ti-receipt"></i></button>');
+
 // ─── MOBILE INIT ───
-function initMobile(){
-  if(window.innerWidth <= 768){
-    // Force sidebar off screen
-    const sb = document.getElementById('main-sidebar');
-    if(sb){
-      sb.style.position = 'fixed';
-      sb.style.transform = 'translateX(-100%)';
-      sb.style.zIndex = '500';
-      sb.style.transition = 'transform .25s ease';
-    }
-    // Force main to full width
-    const main = document.querySelector('.main');
-    if(main) main.style.width = '100%';
+function toggleMobileSidebar(){
+  const sb      = document.getElementById('main-sidebar');
+  const overlay = document.getElementById('sb-overlay');
+  const isOpen  = sb.classList.toggle('mobile-open');
+  overlay.classList.toggle('on', isOpen);
+  if(isOpen){
+    sb.style.transform = 'translateX(0)';
+  } else {
+    sb.style.transform = 'translateX(-100%)';
   }
 }
-// Run on load and resize
-window.addEventListener('resize', initMobile);
-window.addEventListener('load', initMobile);
-document.addEventListener('DOMContentLoaded', initMobile);
-initMobile();
+
+// Close sidebar on mobile when nav item clicked
+document.querySelectorAll('.ni').forEach(item => {
+  item.addEventListener('click', () => {
+    if(window.innerWidth <= 768){
+      document.getElementById('main-sidebar').classList.remove('mobile-open');
+      document.getElementById('sb-overlay').classList.remove('on');
+    }
+  });
+});
+
 </script>
 <!-- ─── PRINT AREA ─── -->
 <div id="print-area" style="display:none"></div>
 </body>
 </html>
-}
