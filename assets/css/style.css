@@ -494,30 +494,3 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
     font-weight: 800;
   }
 }
-/* ─── MOBILE ─── */
-@media (max-width: 768px) {
-  body { overflow: auto; }
-  .shell { flex-direction: column; height: auto; min-height: 100vh; }
-  .sb { width: 100% !important; height: auto; border-right: none; border-bottom: 0.5px solid var(--border); }
-  .nav-sec { display: flex; flex-wrap: wrap; padding: 6px; }
-  .ni { border-left: none !important; border-radius: 8px !important; margin: 2px !important; flex: 0 0 auto; }
-  .main { min-width: 0; }
-  .content { padding: 12px; }
-  .sc { grid-template-columns: repeat(2,1fr) !important; gap: 8px !important; }
-  .row2 { grid-template-columns: 1fr !important; }
-  .pos-wrap { grid-template-columns: 1fr !important; }
-  #pos-grid { grid-template-columns: repeat(2,1fr) !important; }
-  .cp { position: static !important; height: auto !important; }
-  .fr { grid-template-columns: 1fr !important; }
-  .fr3 { grid-template-columns: 1fr 1fr !important; }
-  #staff-cards { grid-template-columns: 1fr !important; }
-  #cust-cards { grid-template-columns: 1fr !important; }
-  .modal { max-width: 95vw !important; }
-  .pg-header { flex-direction: column; gap: 8px; }
-}
-
-@media (max-width: 480px) {
-  .sc { grid-template-columns: 1fr 1fr !important; }
-  .fr3 { grid-template-columns: 1fr !important; }
-  .sk-val { font-size: 16px !important; }
-}

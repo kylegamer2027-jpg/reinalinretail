@@ -2,7 +2,7 @@
 <html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reinalin Retail — Management System</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.31.0/dist/tabler-icons.min.css">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -76,9 +76,8 @@
 <input type="file" id="prod-img-input" accept="image/*" style="display:none" onchange="handleProdImageUpload(this)">
 
 <!-- ─── APP SHELL ─── -->
-<div class="shell" id="app" style="display:none;overflow:hidden">
-  <nav class="sb" id="main-sidebar"></nav>
-  </nav>
+<div class="shell" id="app" style="display:none">
+  <nav class="sb">
     <div class="sb-logo">
       <div class="sb-brand">
         <div class="logo-wrap logo-sb" id="logo-sb">
@@ -120,13 +119,12 @@
     <i class="ti ti-database-export"></i>Backup DB
   </button>
   <button class="logout-btn" onclick="doLogout()"><i class="ti ti-logout"></i>Sign out</button>
-  </div>
-</div> 
+</div>
   </nav>
 
   <div class="main">
     <div class="topbar">
-  <span class="tb-title" id="pg-title">Dashboard</span>
+      <span class="tb-title" id="pg-title">Dashboard</span>
       <div class="tb-right">
         <i class="ti ti-calendar"></i><span id="tb-date"></span>
         <button class="notif-btn" onclick="toggleNotifPanel()" id="notif-trigger">
@@ -583,19 +581,13 @@
       <button class="btn" onclick="clearTxnFilters()"><i class="ti ti-x"></i>Clear</button>
     </div>
   </div>
-  <div class="card" style="padding:0;overflow:hidden"><div style="overflow-x:auto"><table class="tbl" id="txn-tbl"></table>
-    </div>
-  </div>
+  <div class="card" style="padding:0;overflow:hidden"><div style="overflow-x:auto"><table class="tbl" id="txn-tbl"></table></div></div>
 </div>
-
-    </div> <!-- closes .content -->
-  </div> <!-- closes .main -->
-</div> <!-- closes #app shell -->
 
 <!-- ─── MODALS ─── -->
 
 <!-- Product detail popup -->
-<div class="modalbg" id="modal-prod-detail"></div>
+<div class="modalbg" id="modal-prod-detail">
   <div class="modal prod-detail-modal">
     <div class="pdm-hero" id="pdm-hero">
       <span id="pdm-em" style="font-size:64px"></span>
@@ -883,3 +875,4 @@
 <div id="print-area" style="display:none"></div>
 </body>
 </html>
+}
