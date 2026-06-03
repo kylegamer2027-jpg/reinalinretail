@@ -6,7 +6,7 @@ if (empty($_SESSION['user'])) {
     echo json_encode(['error' => 'Unauthorized']);
     exit;
 }
-require_once '../db.php';
+require_once '../config/database.php';
 
 $action = $_GET['action'] ?? '';
 

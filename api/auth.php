@@ -1,7 +1,7 @@
 <?php
 session_start();
 header('Content-Type: application/json');
-require_once '../db.php';
+require_once '../config/database.php';
 
 $data   = json_decode(file_get_contents('php://input'), true) ?? [];
 $action = $data['action'] ?? $_GET['action'] ?? '';

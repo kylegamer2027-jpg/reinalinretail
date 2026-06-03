@@ -13,7 +13,7 @@ if ($_SESSION['user']['role'] !== 'Administrator') {
     exit;
 }
 
-require_once '../db.php';
+require_once '../config/database.php';
 
 $action = $_GET['action'] ?? '';
 
