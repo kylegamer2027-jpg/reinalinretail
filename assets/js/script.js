@@ -814,58 +814,6 @@ function printReceipt(){
 
   toast('Printing receipt...', 'info');
 }
-
-// ─── BARCODE SCANNER ───
-async function simulateScan(){
-  const icon = document.getElementById('scan-icon');
-  const zone = document.getElementById('scan-zone');
-  
-  // Check if there's a real barcode input
-  const barcodeInput = document.getElementById('barcode-input-field');
-  const barcodeVal = barcodeInput ? barcodeInput.value.trim() : '';
-
-  icon.classList.add('scanning');
-  zone.style.borderColor = 'var(--acc)';
-
-  if(barcodeVal){
-    // Real barcode lookup
-    const res = await fetch('api/products.php?action=find_barcode&barcode=' + encodeURIComponent(barcodeVal));
-    const data = await res.json();
-    icon.classList.remove('scanning');
-
-    if(data.found){
-      const p = prods.find(x => x.barcode === barcodeVal || x.sku === barcodeVal);
-      if(p){
-        addCart(p.id);
-        zone.style.borderColor = 'var(--success)';
-        toast('📷 Scanned: ' + p.em + ' ' + p.name, 'success');
-        if(barcodeInput) barcodeInput.value = '';
-      }
-    } else {
-      zone.style.borderColor = 'var(--danger)';
-      toast('❌ Barcode not found: ' + barcodeVal, 'error');
-    }
-    setTimeout(() => zone.style.borderColor = '', 1500);
-    return;
-  }
-
-  // Simulate random scan if no barcode entered
-  setTimeout(() => {
-    const available = prods.filter(p => p.stock > 0);
-    if(!available.length){
-      toast('No products in stock!', 'error');
-      icon.classList.remove('scanning');
-      zone.style.borderColor = '';
-      return;
-    }
-    const p = available[Math.floor(Math.random() * available.length)];
-    addCart(p.id);
-    icon.classList.remove('scanning');
-    zone.style.borderColor = 'var(--success)';
-    setTimeout(() => zone.style.borderColor = '', 1000);
-    toast('📷 Scanned: ' + p.em + ' ' + p.name, 'success');
-  }, 900);
-}
 // ─── BACKUP ───
 async function openBackupModal(){
   document.getElementById('modal-backup').classList.add('on');
