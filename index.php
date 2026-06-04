@@ -299,23 +299,6 @@
       <div class="pg" id="pg-pos">
         <div class="pos-wrap">
           <div>
-            <div class="scan-wrap" id="scan-zone">
-  <i class="ti ti-scan" id="scan-icon"></i>
-  <div style="font-size:12px;font-weight:700;color:var(--text-secondary);margin-bottom:8px">Barcode Scanner</div>
-  <div style="display:flex;gap:6px;justify-content:center">
-    <input type="text" class="fi" id="barcode-input-field"
-      placeholder="Type or scan barcode..."
-      style="width:200px;font-family:'JetBrains Mono',monospace"
-      onkeydown="if(event.key==='Enter')simulateScan()"
-      onclick="event.stopPropagation()">
-    <button class="btn bta" onclick="simulateScan()" style="white-space:nowrap">
-      <i class="ti ti-scan"></i>Scan
-    </button>
-  </div>
-  <div style="font-size:11px;color:var(--text-tertiary);margin-top:6px">
-    Press Enter or click Scan after typing barcode
-  </div>
-</div>
             <div style="display:flex;gap:8px;margin-bottom:10px">
               <input type="text" class="fi" style="flex:1" placeholder="🔍 Search product..." id="pos-srch" oninput="renderPOS()">
               <select class="fi" style="width:150px" id="pos-cat" onchange="renderPOS()"><option value="">All categories</option></select>
