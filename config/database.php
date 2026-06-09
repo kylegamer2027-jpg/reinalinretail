@@ -1,8 +1,8 @@
 <?php
-$host = 'sql307.infinityfree.com';
-$db   = 'if0_42089324_reinalin_db';
-$user = 'if0_42089324';
-$pass = '0e1rzCwdDQ';
+$host = 'localhost';
+$db   = 'root';
+$user = 'reinalin_db';
+$pass = '';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$db;charset=utf8", $user, $pass);
