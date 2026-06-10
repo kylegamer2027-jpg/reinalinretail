@@ -543,16 +543,16 @@
     <div class="stock-bar"><div class="stock-bar-fill" id="pdm-stockbar"></div></div>
     <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-tertiary);margin-top:3px;margin-bottom:16px"><span>0</span><span id="pdm-reorder-lbl"></span></div>
   <div style="display:flex;gap:8px">
-  <button class="btn" style="flex:1;justify-content:center" onclick="printReceipt()">
-    <i class="ti ti-printer"></i>Print Receipt
+  <button class="btn bta" id="pdm-add-btn" style="flex:1;justify-content:center">
+    <i class="ti ti-shopping-cart-plus"></i>Add to cart
   </button>
-  <button class="btn btg" style="flex:1;justify-content:center" onclick="printReceipt();closeModal('modal-receipt')">
-    <i class="ti ti-printer"></i>Print & Close
+  <button class="btn" id="pdm-edit-btn" style="flex:1;justify-content:center">
+    <i class="ti ti-edit"></i>Edit
   </button>
-  <button class="btn bta" style="flex:1;justify-content:center" onclick="closeModal('modal-receipt')">
-    Done
+  <button class="btn" style="flex:1;justify-content:center" onclick="closeModal('modal-prod-detail')">
+    <i class="ti ti-x"></i>Close
   </button>
-    </div>
+</div>
   </div>
 </div>
 

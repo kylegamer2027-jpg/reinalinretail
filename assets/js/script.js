@@ -604,14 +604,13 @@ function renderPOS(){
   }).join('');
   renderCart();
 }
-
 function showPosDetail(id){
   const p=prods.find(x=>x.id===id);if(!p)return;
   const hero=document.getElementById('pdm-hero');
   if(p.img){
     hero.innerHTML=`<img src="${p.img}" style="width:100%;height:100%;object-fit:cover;border-radius:14px"><div class="pdm-badge" id="pdm-badge"></div>`;
   }else{
-    hero.innerHTML=`<span id="pdm-em" style="font-size:64px">${p.em}</span><div class="pdm-badge" id="pdm-badge"></div>`;
+    hero.innerHTML=`<span style="font-size:64px">${p.em}</span><div class="pdm-badge" id="pdm-badge"></div>`;
   }
   document.getElementById('pdm-name').textContent=p.name;
   document.getElementById('pdm-cat').textContent=p.cat;
@@ -619,7 +618,7 @@ function showPosDetail(id){
   document.getElementById('pdm-stock').textContent=p.stock;
   const mkp=p.cost>0?Math.round((p.price-p.cost)/p.cost*100)+'%':'—';
   document.getElementById('pdm-mkp').textContent=mkp;
-  const status=p.stock===0?`<span class="bdg br">Out</span>`:p.stock<p.reorder?`<span class="bdg bo">Low</span>`:`<span class="bdg bg">In stock</span>`;
+  const status=p.stock===0?`<span class="bdg br">Out of stock</span>`:p.stock<p.reorder?`<span class="bdg bo">Low stock</span>`:`<span class="bdg bg">In stock</span>`;
   document.getElementById('pdm-badge').innerHTML=status;
   const bar=document.getElementById('pdm-stockbar');
   const pct=Math.min(100,(p.stock/Math.max(p.reorder*2,p.stock))*100);
@@ -627,13 +626,24 @@ function showPosDetail(id){
   bar.style.background=barColor;bar.style.width='0%';
   setTimeout(()=>bar.style.width=pct+'%',50);
   document.getElementById('pdm-reorder-lbl').textContent=`Reorder at ${p.reorder}`;
-  document.getElementById('pdm-add-btn').innerHTML='<i class="ti ti-shopping-cart-plus"></i>Add to cart';
-  document.getElementById('pdm-add-btn').onclick=()=>{addCart(id);closeModal('modal-prod-detail');};
-  document.getElementById('pdm-add-btn').disabled=p.stock===0;
-  document.getElementById('pdm-add-btn').style.opacity=p.stock===0?'.5':'1';
-  document.getElementById('pdm-edit-btn').style.display='none';
+
+  // Show current qty in cart if any
+  const inCart=cart[id]||0;
+  const addBtn=document.getElementById('pdm-add-btn');
+  addBtn.innerHTML=inCart>0
+    ?`<i class="ti ti-shopping-cart-plus"></i>Add more (${inCart} in cart)`
+    :`<i class="ti ti-shopping-cart-plus"></i>Add to cart`;
+  addBtn.onclick=()=>{addCart(id);closeModal('modal-prod-detail');};
+  addBtn.disabled=p.stock===0||inCart>=p.stock;
+  addBtn.style.opacity=(p.stock===0||inCart>=p.stock)?'.5':'1';
+
+  // Hide edit button when in POS context
+  const editBtn=document.getElementById('pdm-edit-btn');
+  editBtn.style.display='none';
+
   openModal('prod-detail');
 }
+
 function addCart(id){
   const p=prods.find(x=>x.id===id);if(!p||p.stock===0)return;
   if((cart[id]||0)>=p.stock){toast('Not enough stock!','error');return;}
@@ -655,12 +665,30 @@ function renderCart(){
     const thumb=p.img
       ?`<img src="${p.img}" style="width:32px;height:32px;object-fit:cover;border-radius:7px;flex-shrink:0;border:1px solid var(--border)">`
       :`<div class="ci-em">${p.em}</div>`;
-   return`<div class="ci-row">${thumb}<div class="ci-inf"><div class="ci-nm">${p.name}</div><div class="ci-pr">${fmt(p.price)} × ${cart[k]} = <strong>${fmt(ln)}</strong></div></div><div class="qc"><button class="qb" onclick="chgQty('${k}',-1)">−</button><span style="font-size:12px;min-width:20px;text-align:center;color:var(--text-primary);font-weight:700">${cart[k]}</span><button class="qb" onclick="chgQty('${k}',1)">+</button><button class="qb" style="background:var(--danger-bg);border-color:var(--danger);color:var(--danger);margin-left:4px" onclick="removeFromCart('${k}')"><i class="ti ti-trash" style="font-size:11px"></i></button></div></div>`;
+   return`<div class="ci-row">${thumb}
+  <div class="ci-inf">
+    <div class="ci-nm">${p.name}</div>
+    <div class="ci-pr">${fmt(p.price)} × ${cart[k]} = <strong>${fmt(ln)}</strong></div>
+  </div>
+  <div class="qc">
+    <button class="qb" onclick="chgQty('${k}',-1)" title="Decrease">−</button>
+    <span style="font-size:12px;min-width:22px;text-align:center;color:var(--text-primary);font-weight:700">${cart[k]}</span>
+    <button class="qb" onclick="chgQty('${k}',1)" title="Increase">+</button>
+    <button class="qb btd" style="background:var(--danger-bg);border:1.5px solid var(--danger);color:var(--danger);margin-left:6px;width:28px;height:28px;border-radius:7px;font-size:13px" onclick="removeFromCart('${k}')" title="Remove item">
+      <i class="ti ti-trash"></i>
+    </button>
+  </div>
+</div>`;
   }).join('');
   document.getElementById('ct-sub').textContent=fmt(sub);
   calcTotal();
 }
 function chgQty(id,d){const p=prods.find(x=>x.id===id);const nq=(cart[id]||0)+d;if(nq<=0){delete cart[id];}else if(nq<=p.stock){cart[id]=nq;}renderCart();}
+function removeFromCart(id){
+  delete cart[id];
+  renderPOS();
+  toast('Item removed from cart','info');
+}
 function setDiscType(t){discType=t;document.getElementById('dt-pct').classList.toggle('on',t==='pct');document.getElementById('dt-fix').classList.toggle('on',t==='fix');calcTotal();}
 function calcTotal(){
   const keys=Object.keys(cart).filter(k=>cart[k]>0);
