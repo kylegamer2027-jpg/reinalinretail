@@ -666,7 +666,7 @@ function renderCart(){
       ?`<img src="${p.img}" style="width:32px;height:32px;object-fit:cover;border-radius:7px;flex-shrink:0;border:1px solid var(--border)">`
       :`<div class="ci-em">${p.em}</div>`;
    return`<div class="ci-row">${thumb}
-  <div class="ci-inf">
+    <div class="ci-inf">
     <div class="ci-nm">${p.name}</div>
     <div class="ci-pr">${fmt(p.price)} × ${cart[k]} = <strong>${fmt(ln)}</strong></div>
   </div>

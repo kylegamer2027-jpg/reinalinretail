@@ -158,7 +158,7 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg-te
 .fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 
 /* ─── POS ─── */
-.pos-wrap{display:grid;grid-template-columns:1fr 330px;gap:12px}
+.pos-wrap{display:grid;grid-template-columns:1fr 360px;gap:12px}
 
 /* ── POS PRODUCT TILE ── */
 .pg-tile{
@@ -274,7 +274,7 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg-te
 .ci-row{display:flex;align-items:center;gap:6px;padding:6px 6px;transition:background .1s;border-radius:8px;margin:2px 2px;min-width:0;}
 .ci-row:hover{background:var(--bg-secondary)}
 .ci-em{font-size:18px;flex-shrink:0}
-.ci-inf{flex:1;min-width:0;overflow:hidden;max-width:60px;}
+.ci-inf{flex:1;min-width:0;overflow:hidden;max-width:50px;}
 .ci-nm{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-primary)}
 .ci-pr{font-size:11px;color:var(--text-secondary)}
 .qc{display:flex;align-items:center;gap:4px}
