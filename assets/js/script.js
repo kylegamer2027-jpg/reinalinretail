@@ -373,7 +373,6 @@ async function renderDash(){
 
   updateDashStats();
   await loadTransactions();
-  await loadTargets();
 
   // Recent transactions table
   document.getElementById('d-txn-tbl').innerHTML=`<thead><tr><th>ID</th><th>Items</th><th>Total</th><th>Method</th><th>Staff</th><th>Date</th><th>Time</th></tr></thead><tbody>${txns.slice(0,5).map(t=>`<tr style="cursor:pointer" onclick="showTxnDetail('${t.id}')"><td style="color:var(--acc);font-weight:700;font-family:'JetBrains Mono',monospace">${t.id}</td><td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${t.items.map(i=>i.qty+'× '+i.name).join(', ')}</td><td style="font-weight:700">${fmt(t.total)}</td><td><span class="bdg ${t.pay==='Cash'?'bg':t.pay==='Utang'?'bo':'bb'}">${t.pay}</span></td><td>${t.staff}</td><td>${t.date}</td><td>${t.time}</td></tr>`).join('')}</tbody>`;
@@ -596,9 +595,6 @@ function renderPOS(){
         ${imgContent}
         ${oos?'<div class="pt-oos-overlay"></div>':''}
       </div>
-      <button class="pt-upload-btn" onclick="triggerTileImageUpload('${p.id}',event)">
-        <i class="ti ti-camera" style="font-size:10px"></i>${hasImg?'Change Photo':'Upload Photo'}
-      </button>
       <div class="pt-info">
         <div class="pt-nm">${p.name}</div>
         <div class="pt-pr">${fmt(p.price)}</div>
@@ -876,68 +872,6 @@ async function downloadBackup(){
 
   btn.innerHTML = '<i class="ti ti-download"></i>Download Backup';
   btn.disabled  = false;
-}
-// ─── SALES TARGETS ───
-async function loadTargets(){
-  try {
-    const res  = await fetch('api/targets.php?action=get');
-    const data = await res.json();
-
-    // Daily progress
-    const dailyPct = data.daily_pct || 0;
-    document.getElementById('daily-pct').textContent        = dailyPct + '%';
-    document.getElementById('daily-bar').style.width        = dailyPct + '%';
-    document.getElementById('daily-bar').style.background   = dailyPct >= 100
-      ? 'linear-gradient(90deg,#1D9E75,#116b4e)'
-      : 'linear-gradient(90deg,#E8700A,#B85508)';
-    document.getElementById('daily-sales-amt').textContent  = fmt(data.daily_sales) + ' achieved';
-    document.getElementById('daily-target-amt').textContent = 'Goal: ' + fmt(data.daily_target);
-
-    // Monthly progress
-    const monthlyPct = data.monthly_pct || 0;
-    document.getElementById('monthly-pct').textContent        = monthlyPct + '%';
-    document.getElementById('monthly-bar').style.width        = monthlyPct + '%';
-    document.getElementById('monthly-bar').style.background   = monthlyPct >= 100
-      ? 'linear-gradient(90deg,#E8700A,#B85508)'
-      : 'linear-gradient(90deg,#1D9E75,#116b4e)';
-    document.getElementById('monthly-sales-amt').textContent  = fmt(data.monthly_sales) + ' achieved';
-    document.getElementById('monthly-target-amt').textContent = 'Goal: ' + fmt(data.monthly_target);
-
-    // Show congrats if target hit
-    if(dailyPct >= 100) toast('🎉 Daily sales target reached!', 'success');
-    if(monthlyPct >= 100) toast('🎉 Monthly sales target reached!', 'success');
-
-  } catch(err){
-    console.error('loadTargets error:', err);
-  }
-}
-
-function openTargetModal(){
-  document.getElementById('modal-target').classList.add('on');
-}
-
-async function saveTargets(){
-  const daily   = parseFloat(document.getElementById('tgt-daily').value);
-  const monthly = parseFloat(document.getElementById('tgt-monthly').value);
-
-  if(!daily || daily <= 0)  { toast('Enter a valid daily target.','error'); return; }
-  if(!monthly || monthly <= 0){ toast('Enter a valid monthly target.','error'); return; }
-
-  await fetch('api/targets.php?action=update', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ type:'daily', amount: daily, created_by: currentUser?.name })
-  });
-
-  await fetch('api/targets.php?action=update', {
-    method: 'POST',
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ type:'monthly', amount: monthly, created_by: currentUser?.name })
-  });
-
-  toast('Targets updated ✅');
-  closeModal('modal-target');
-  await loadTargets();
 }
 // ─── ATTENDANCE ───
 async function renderAttendance(){

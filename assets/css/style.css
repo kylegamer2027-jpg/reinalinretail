@@ -267,24 +267,6 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg-te
   padding:2px 7px;border-radius:99px;letter-spacing:.3px;
 }
 
-/* Upload button on tile hover */
-.pt-upload-btn{
-  position:absolute;bottom:0;left:0;right:0;
-  background:rgba(232,112,10,0.92);color:#fff;border:none;
-  font-size:9.5px;font-weight:700;padding:5px 8px;cursor:pointer;
-  display:none;white-space:nowrap;z-index:3;gap:4px;
-  align-items:center;justify-content:center;
-  font-family:inherit;letter-spacing:.2px;
-  backdrop-filter:blur(2px);
-}
-.pg-tile:hover .pt-upload-btn{display:flex}
-.pg-tile.has-img:hover .pt-upload-btn{
-  /* On tiles with real images, show the button inside the image area */
-  bottom:auto;top:50%;transform:translateY(-50%);
-  left:8px;right:8px;border-radius:6px;
-  background:rgba(0,0,0,0.6);
-}
-
 /* ─── CART ─── */
 .cp{background:var(--bg-primary);border:0.5px solid var(--border);border-radius:12px;display:flex;flex-direction:column;height:calc(100vh - 128px);position:sticky;top:0}
 .cp-hd{padding:12px 14px;border-bottom:0.5px solid var(--border);font-weight:800;font-size:13px;display:flex;justify-content:space-between;align-items:center;letter-spacing:-.2px}

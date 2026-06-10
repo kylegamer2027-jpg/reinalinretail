@@ -72,8 +72,6 @@
   <div id="notif-items"></div>
 </div>
 
-<!-- ─── HIDDEN FILE INPUT for product images ─── -->
-<input type="file" id="prod-img-input" accept="image/*" style="display:none" onchange="handleProdImageUpload(this)">
 
 <!-- ─── APP SHELL ─── -->
 <div class="shell" id="app" style="display:none">
@@ -200,27 +198,6 @@
     <div class="sk-val" id="d-utang">₱0</div>
   </div>
 </div>
-<!-- Sales Targets -->
-<div class="card" style="margin-bottom:14px">
-  <div class="card-hd">
-    🎯 Sales Targets
-    <button class="btn bts" onclick="openTargetModal()"><i class="ti ti-settings"></i>Set targets</button>
-  </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
-    <!-- Daily target -->
-    <div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-        <span style="font-size:12px;font-weight:700;color:var(--text-primary)">📅 Daily Target</span>
-        <span style="font-size:12px;font-weight:800;color:var(--acc)" id="daily-pct">0%</span>
-      </div>
-      <div style="height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin-bottom:6px">
-        <div id="daily-bar" style="height:100%;width:0%;border-radius:5px;transition:width .8s ease;background:linear-gradient(90deg,#E8700A,#B85508)"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary)">
-        <span id="daily-sales-amt">₱0 achieved</span>
-        <span id="daily-target-amt">Goal: ₱0</span>
-      </div>
-    </div>
     <!-- Monthly target -->
     <div>
       <div style="display:flex;justify-content:space-between;margin-bottom:6px">
@@ -302,11 +279,6 @@
             <div style="display:flex;gap:8px;margin-bottom:10px">
               <input type="text" class="fi" style="flex:1" placeholder="🔍 Search product..." id="pos-srch" oninput="renderPOS()">
               <select class="fi" style="width:150px" id="pos-cat" onchange="renderPOS()"><option value="">All categories</option></select>
-            </div>
-            <!-- tip banner -->
-            <div style="display:flex;align-items:center;gap:6px;background:var(--info-bg);border:1px solid rgba(55,138,221,.2);border-radius:8px;padding:7px 12px;margin-bottom:10px;font-size:11px;color:var(--info-text);font-weight:600">
-              <i class="ti ti-camera" style="font-size:14px"></i>
-              Hover any product tile and click <strong>📷 Upload Photo</strong> to add a product image.
             </div>
             <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px" id="pos-grid"></div>
           </div>
@@ -586,10 +558,16 @@
     <div style="font-size:11px;color:var(--text-secondary);margin-bottom:4px;font-weight:700;letter-spacing:.2px;text-transform:uppercase">Stock level</div>
     <div class="stock-bar"><div class="stock-bar-fill" id="pdm-stockbar"></div></div>
     <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-tertiary);margin-top:3px;margin-bottom:16px"><span>0</span><span id="pdm-reorder-lbl"></span></div>
-    <div style="display:flex;gap:8px">
-      <button class="btn" style="flex:1;justify-content:center" onclick="closeModal('modal-prod-detail')">Close</button>
-      <button class="btn bta" style="flex:1;justify-content:center" id="pdm-add-btn"><i class="ti ti-shopping-cart-plus"></i>Add to cart</button>
-      <button class="btn" style="flex:1;justify-content:center" id="pdm-edit-btn"><i class="ti ti-edit"></i>Edit</button>
+  <div style="display:flex;gap:8px">
+  <button class="btn" style="flex:1;justify-content:center" onclick="printReceipt()">
+    <i class="ti ti-printer"></i>Print Receipt
+  </button>
+  <button class="btn btg" style="flex:1;justify-content:center" onclick="printReceipt();closeModal('modal-receipt')">
+    <i class="ti ti-printer"></i>Print & Close
+  </button>
+  <button class="btn bta" style="flex:1;justify-content:center" onclick="closeModal('modal-receipt')">
+    Done
+  </button>
     </div>
   </div>
 </div>
@@ -730,26 +708,6 @@
       <button class="btn bta" onclick="downloadBackup()" id="backup-btn">
         <i class="ti ti-download"></i>Download Backup
       </button>
-    </div>
-  </div>
-</div>
-<!-- Set Sales Target -->
-<div class="modalbg" id="modal-target">
-  <div class="modal" style="max-width:380px">
-    <h3><i class="ti ti-target"></i>Set Sales Targets</h3>
-    <div class="fg">
-      <label class="fl">Daily Sales Target (₱)</label>
-      <input class="fi" type="number" id="tgt-daily" placeholder="e.g. 2000" min="0">
-      <div style="font-size:11px;color:var(--text-secondary);margin-top:4px">How much you want to sell per day</div>
-    </div>
-    <div class="fg">
-      <label class="fl">Monthly Sales Target (₱)</label>
-      <input class="fi" type="number" id="tgt-monthly" placeholder="e.g. 50000" min="0">
-      <div style="font-size:11px;color:var(--text-secondary);margin-top:4px">How much you want to sell this month</div>
-    </div>
-    <div class="ma">
-      <button class="btn" onclick="closeModal('modal-target')">Cancel</button>
-      <button class="btn bta" onclick="saveTargets()"><i class="ti ti-check"></i>Save targets</button>
     </div>
   </div>
 </div>
