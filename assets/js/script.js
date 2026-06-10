@@ -1548,7 +1548,13 @@ async function renderReports(force=false){
     const tc=isDark?'#777':'#aaa';
     const c1=document.getElementById('ch-monthly');
     if(c1._ch)c1._ch.destroy();
-    c1._ch=new Chart(c1,{type:'bar',data:{labels:['Jan','Feb','Mar','Apr','May','Jun'],datasets:[{data:[8500,9200,7800,11000,12400,0],backgroundColor:'rgba(232,112,10,0.8)',borderRadius:8,hoverBackgroundColor:'#E8700A'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:tc,font:{size:11,family:'Plus Jakarta Sans'}}},y:{grid:{color:gc},ticks:{color:tc,font:{size:11,family:'Plus Jakarta Sans'},callback:v=>'₱'+v}}}}});
+    const monthLabels=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const monthTotals=Array(12).fill(0);
+    txns.forEach(t=>{
+      const m=new Date(t.date).getMonth();
+      if(!isNaN(m)) monthTotals[m]+=t.total;
+    });
+    c1._ch=new Chart(c1,{type:'bar',data:{labels:monthLabels,datasets:[{data:monthTotals,backgroundColor:'rgba(232,112,10,0.8)',borderRadius:8,hoverBackgroundColor:'#E8700A'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{color:tc,font:{size:11,family:'Plus Jakarta Sans'}}},y:{grid:{color:gc},ticks:{color:tc,font:{size:11,family:'Plus Jakarta Sans'},callback:v=>'₱'+v}}}}});
     const topP=prods.map(p=>({name:p.name.length>14?p.name.slice(0,14)+'…':p.name,sales:txns.reduce((a,t)=>a+t.items.filter(i=>i.name===p.name).reduce((b,i)=>b+i.price*i.qty,0),0)})).sort((a,b)=>b.sales-a.sales).slice(0,5);
     const c2=document.getElementById('ch-top');
     if(c2._ch)c2._ch.destroy();
