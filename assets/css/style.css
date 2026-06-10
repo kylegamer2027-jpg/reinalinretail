@@ -158,7 +158,7 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg-te
 .fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
 
 /* ─── POS ─── */
-.pos-wrap{display:grid;grid-template-columns:1fr 360px;gap:12px}
+.pos-wrap{display:grid;grid-template-columns:1fr 380px;gap:12px}
 
 /* ── POS PRODUCT TILE ── */
 .pg-tile{
@@ -271,10 +271,11 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg-te
 .cp{background:var(--bg-primary);border:0.5px solid var(--border);border-radius:12px;display:flex;flex-direction:column;height:calc(100vh - 128px);position:sticky;top:0;min-width:0;}
 .cp-hd{padding:12px 14px;border-bottom:0.5px solid var(--border);font-weight:800;font-size:13px;display:flex;justify-content:space-between;align-items:center;letter-spacing:-.2px}
 .cp-body{flex:1;padding:4px 0;overflow-y:auto}
-.ci-row{display:flex;align-items:center;gap:6px;padding:6px 6px;transition:background .1s;border-radius:8px;margin:2px 2px;min-width:0;}
+/* REPLACE WITH: */
+.ci-row{display:flex;align-items:center;gap:4px;padding:4px 6px;transition:background .1s;border-radius:8px;margin:2px 2px;min-width:0;overflow:visible;}
 .ci-row:hover{background:var(--bg-secondary)}
 .ci-em{font-size:18px;flex-shrink:0}
-.ci-inf{flex:1;min-width:0;overflow:hidden;max-width:50px;}
+.ci-inf{flex:1;min-width:0;overflow:hidden;max-width:45px;}
 .ci-nm{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--text-primary)}
 .ci-pr{font-size:11px;color:var(--text-secondary)}
 .qc{display:flex;align-items:center;gap:4px}
