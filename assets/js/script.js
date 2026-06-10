@@ -665,18 +665,17 @@ function renderCart(){
     const thumb=p.img
       ?`<img src="${p.img}" style="width:32px;height:32px;object-fit:cover;border-radius:7px;flex-shrink:0;border:1px solid var(--border)">`
       :`<div class="ci-em">${p.em}</div>`;
-   return`<div class="ci-row">${thumb}
-    <div class="ci-inf">
+ return`<div class="ci-row" style="display:flex;align-items:center;gap:4px;padding:4px 6px;border-radius:8px;margin:2px;overflow:hidden;">
+  ${thumb}
+  <div style="flex:1;min-width:0;overflow:hidden;max-width:75px;">
     <div class="ci-nm">${p.name}</div>
     <div class="ci-pr">${fmt(p.price)} × ${cart[k]} = <strong>${fmt(ln)}</strong></div>
   </div>
-  <div class="qc" style="display:flex;align-items:center;gap:4px;flex-shrink:0;">
-    <button class="qb" onclick="chgQty('${k}',-1)" title="Decrease">−</button>
-    <span style="font-size:12px;min-width:22px;text-align:center;color:var(--text-primary);font-weight:700">${cart[k]}</span>
-    <button class="qb" onclick="chgQty('${k}',1)" title="Increase">+</button>
-    <button class="qb" onclick="removeFromCart('${k}')" title="Remove item" style="color:var(--danger);border-color:var(--danger);background:var(--danger-bg);">
-        <i class="ti ti-trash" style="font-size:11px"></i>
-    </button>
+  <div style="display:flex;align-items:center;gap:3px;flex-shrink:0;margin-left:auto;">
+    <button class="qb" onclick="chgQty('${k}',-1)">−</button>
+    <span style="font-size:12px;min-width:18px;text-align:center;font-weight:700">${cart[k]}</span>
+    <button class="qb" onclick="chgQty('${k}',1)">+</button>
+    <button class="qb" onclick="removeFromCart('${k}')" style="color:var(--danger);border-color:var(--danger);background:var(--danger-bg);"><i class="ti ti-trash" style="font-size:11px"></i></button>
   </div>
 </div>`;
   }).join('');
