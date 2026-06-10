@@ -105,7 +105,7 @@ body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg-te
 .notif-badge{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:var(--danger);border:1.5px solid var(--bg-primary)}
 .content{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;background:var(--bg-tertiary);transition:background .2s;position:relative}
 .pg{display:none;visibility:hidden;position:absolute;inset:0;pointer-events:none;width:100%}
-.pg.on{display:flex;visibility:visible;flex-direction:column;overflow-y:auto;overflow-x:hidden;position:absolute;inset:0;pointer-events:auto;padding:16px 20px}
+.pg.on{display:flex;visibility:visible;flex-direction:column;overflow-y:auto;overflow-x:hidden;position:absolute;inset:0;pointer-events:auto;padding:16px 20px;scroll-behavior:smooth;}
 /* ─── STATS ─── */
 .sc{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
 .sk{background:var(--bg-primary);border:0.5px solid var(--border);border-radius:12px;padding:14px 16px;transition:all .2s;position:relative;overflow:hidden}
@@ -474,4 +474,31 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
     margin-top: 6px;
     font-weight: 800;
   }
+}/* ─── INVENTORY TABLE SCROLL ─── */
+#pg-inventory .card {
+  max-height: 420px;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+#pg-inventory .tbl thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-primary);
+  z-index: 1;
+}
+
+/* ─── RESTOCK HISTORY SCROLL ─── */
+#restock-log-tbl {
+  display: block;
+  max-height: 300px;
+  overflow-y: auto;
+  width: 100%;
+}
+
+#restock-log-tbl thead tr {
+  position: sticky;
+  top: 0;
+  background: var(--bg-primary);
+  z-index: 1;
 }
