@@ -655,7 +655,7 @@ function renderCart(){
     const thumb=p.img
       ?`<img src="${p.img}" style="width:32px;height:32px;object-fit:cover;border-radius:7px;flex-shrink:0;border:1px solid var(--border)">`
       :`<div class="ci-em">${p.em}</div>`;
-    return`<div class="ci-row">${thumb}<div class="ci-inf"><div class="ci-nm">${p.name}</div><div class="ci-pr">${fmt(p.price)} × ${cart[k]} = <strong>${fmt(ln)}</strong></div></div><div class="qc"><button class="qb" onclick="chgQty('${k}',-1)">−</button><span style="font-size:12px;min-width:20px;text-align:center;color:var(--text-primary);font-weight:700">${cart[k]}</span><button class="qb" onclick="chgQty('${k}',1)">+</button></div></div>`;
+   return`<div class="ci-row">${thumb}<div class="ci-inf"><div class="ci-nm">${p.name}</div><div class="ci-pr">${fmt(p.price)} × ${cart[k]} = <strong>${fmt(ln)}</strong></div></div><div class="qc"><button class="qb" onclick="chgQty('${k}',-1)">−</button><span style="font-size:12px;min-width:20px;text-align:center;color:var(--text-primary);font-weight:700">${cart[k]}</span><button class="qb" onclick="chgQty('${k}',1)">+</button><button class="qb" style="background:var(--danger-bg);border-color:var(--danger);color:var(--danger);margin-left:4px" onclick="removeFromCart('${k}')"><i class="ti ti-trash" style="font-size:11px"></i></button></div></div>`;
   }).join('');
   document.getElementById('ct-sub').textContent=fmt(sub);
   calcTotal();
