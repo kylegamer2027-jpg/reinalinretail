@@ -674,10 +674,10 @@ function renderCart(){
     <button class="qb" onclick="chgQty('${k}',-1)" title="Decrease">−</button>
     <span style="font-size:12px;min-width:22px;text-align:center;color:var(--text-primary);font-weight:700">${cart[k]}</span>
     <button class="qb" onclick="chgQty('${k}',1)" title="Increase">+</button>
-    <button style="width:28px;height:28px;border-radius:7px;font-size:13px;background:var(--danger-bg);border:1.5px solid var(--danger);color:var(--danger);cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:4px;flex-shrink:0;" onclick="removeFromCart('${k}')" title="Remove item">
-      <i class="ti ti-trash"></i>
+    <button class="qb" onclick="removeFromCart('${k}')" title="Remove item" style="color:var(--danger);border-color:var(--danger);background:var(--danger-bg);">
+        <i class="ti ti-trash" style="font-size:11px"></i>
     </button>
-</div>
+  </div>
 </div>`;
   }).join('');
   document.getElementById('ct-sub').textContent=fmt(sub);
