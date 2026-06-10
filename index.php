@@ -198,22 +198,6 @@
     <div class="sk-val" id="d-utang">₱0</div>
   </div>
 </div>
-    <!-- Monthly target -->
-    <div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:6px">
-        <span style="font-size:12px;font-weight:700;color:var(--text-primary)">🗓️ Monthly Target</span>
-        <span style="font-size:12px;font-weight:800;color:var(--acc)" id="monthly-pct">0%</span>
-      </div>
-      <div style="height:10px;background:var(--border);border-radius:5px;overflow:hidden;margin-bottom:6px">
-        <div id="monthly-bar" style="height:100%;width:0%;border-radius:5px;transition:width .8s ease;background:linear-gradient(90deg,#1D9E75,#116b4e)"></div>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text-secondary)">
-        <span id="monthly-sales-amt">₱0 achieved</span>
-        <span id="monthly-target-amt">Goal: ₱0</span>
-      </div>
-    </div>
-  </div>
-</div>
         <div class="row2">
           <div class="card"><div class="card-hd">Weekly Sales <span class="bdg bo">7 days</span></div><div class="ch"><canvas id="ch-sales"></canvas></div></div>
           <div class="card"><div class="card-hd">Sales by Category</div><div class="ch"><canvas id="ch-cat"></canvas></div></div>
