@@ -489,6 +489,19 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
   z-index: 1;
 }
 
+#pg-inventory .card {
+  max-height: calc(100vh - 280px);
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+#pg-inventory .tbl thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-primary);
+  z-index: 1;
+}
+
 /* ─── RESTOCK HISTORY SCROLL ─── */
 #restock-log-tbl {
   display: block;
