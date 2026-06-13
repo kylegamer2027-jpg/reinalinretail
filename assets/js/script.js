@@ -707,6 +707,8 @@ function setPay(m,el){
   payMethod=m.charAt(0).toUpperCase()+m.slice(1);
   document.querySelectorAll('.pb').forEach(b=>b.classList.remove('on'));el.classList.add('on');
   document.getElementById('utang-name-wrap').style.display=m==='utang'?'block':'none';
+  document.getElementById('ewallet-wrap').style.display=(m==='gcash'||m==='maya')?'block':'none';
+  document.getElementById('cash-in-wrap').style.display=m==='cash'?'flex':'none';
 }
 
 // ─── CHECKOUT + QR ───
@@ -719,8 +721,22 @@ async function checkout(){
   const cash  = parseFloat(document.getElementById('cash-in').value) || 0;
 
   if(payMethod==='Cash' && cash<total){ toast('Cash tendered is less than total!','error'); return; }
+
+  // E-wallet validation
+  if(payMethod==='GCash'||payMethod==='Maya'){
+    const ewalletNum = document.getElementById('ewallet-num').value.trim();
+    const epaid = parseFloat(document.getElementById('ewallet-paid').value)||0;
+    if(!ewalletNum){ toast('Please enter the e-wallet number.','error'); return; }
+    if(epaid < total){ toast('Amount paid via '+payMethod+' is less than the total!','error'); return; }
+  }
+
+  // Utang validation — must be registered customer
   const uname = document.getElementById('utang-name').value.trim();
-  if(payMethod==='Utang' && !uname){ toast('Enter customer name for credit.','error'); return; }
+  if(payMethod==='Utang'){
+    if(!uname){ toast('Please select a customer for credit.','error'); return; }
+    const match = customers.find(c => c.name.toLowerCase() === uname.toLowerCase());
+    if(!match){ toast('Customer not found! Only registered customers can have credit.','error'); return; }
+  }
 
   const change = Math.max(0, cash - total);
   const disc   = sub - total;
@@ -1924,6 +1940,46 @@ function downloadCSV(name,rows){
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=name;a.click();
   toast('CSV exported 📥','info');
 }
+// ─── EWALLET AMOUNT CHECK ───
+function checkEwalletAmt(){
+  const total=parseFloat((document.getElementById('ct-total').textContent||'₱0').replace(/[₱,]/g,''))||0;
+  const paid=parseFloat(document.getElementById('ewallet-paid').value)||0;
+  const warn=document.getElementById('ewallet-warn');
+  if(warn) warn.style.display=(paid>0&&paid<total)?'block':'none';
+}
+
+// ─── UTANG CUSTOMER SUGGESTIONS ───
+function filterUtangSuggestions(){
+  const q=(document.getElementById('utang-name').value||'').toLowerCase();
+  const box=document.getElementById('utang-suggestions');
+  if(!q){box.style.display='none';return;}
+  const matches=customers
+    .filter(c=>c.name.toLowerCase().includes(q))
+    .sort((a,b)=>a.name.localeCompare(b.name));
+  if(!matches.length){box.style.display='none';return;}
+  box.style.display='block';
+  box.innerHTML=matches.map(c=>`
+    <div onclick="selectUtangCustomer('${c.name.replace(/'/g,"\\'")}')"
+      style="padding:8px 12px;cursor:pointer;font-size:12px;font-weight:600;border-bottom:0.5px solid var(--border);transition:background .1s"
+      onmouseover="this.style.background='var(--acc-l)'"
+      onmouseout="this.style.background=''">
+      <span style="color:var(--text-primary)">${c.name}</span>
+      ${parseFloat(c.outstanding_credit||0)>0?`<span class="bdg bo" style="font-size:9px;margin-left:6px">Has utang</span>`:''}
+      ${c.phone?`<span style="color:var(--text-tertiary);font-size:10px;margin-left:6px">${c.phone}</span>`:''}
+    </div>`).join('');
+}
+
+function selectUtangCustomer(name){
+  document.getElementById('utang-name').value=name;
+  document.getElementById('utang-suggestions').style.display='none';
+}
+
+// Close suggestions when clicking outside
+document.addEventListener('click',e=>{
+  const box=document.getElementById('utang-suggestions');
+  const input=document.getElementById('utang-name');
+  if(box&&input&&!box.contains(e.target)&&e.target!==input) box.style.display='none';
+});
 
 // ─── FAB ───
 document.body.insertAdjacentHTML('beforeend','<button class="quick-sale-fab" id="quick-sale-fab" onclick="nav(\'pos\',document.querySelectorAll(\'.ni\')[2])" title="Quick sale"><i class="ti ti-receipt"></i></button>');

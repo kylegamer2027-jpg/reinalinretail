@@ -293,10 +293,23 @@
                 <div class="pb" onclick="setPay('maya',this)"><i class="ti ti-credit-card"></i>Maya</div>
                 <div class="pb" onclick="setPay('utang',this)"><i class="ti ti-user-dollar"></i>Utang</div>
               </div>
-              <div id="utang-name-wrap" style="display:none;margin-bottom:6px">
-                <input type="text" class="fi" id="utang-name" placeholder="Customer name for credit...">
+              <!-- Utang -->
+              <div id="utang-name-wrap" style="display:none;margin-bottom:6px;position:relative">
+                <input type="text" class="fi" id="utang-name" placeholder="Search registered customer..." oninput="filterUtangSuggestions()" autocomplete="off">
+                <div id="utang-suggestions" style="display:none;position:absolute;top:100%;left:0;right:0;background:var(--bg-primary);border:1.5px solid var(--acc);border-radius:8px;z-index:50;max-height:160px;overflow-y:auto;box-shadow:var(--shadow-lg);margin-top:2px"></div>
               </div>
-              <div style="display:flex;gap:6px;margin-bottom:8px">
+
+              <!-- E-wallet -->
+              <div id="ewallet-wrap" style="display:none;margin-bottom:6px">
+                <input type="text" class="fi" id="ewallet-num" placeholder="e.g. 09XXXXXXXXX (e-wallet number)" style="margin-bottom:6px">
+                <div style="display:flex;gap:6px;align-items:center">
+                  <input type="number" class="fi" id="ewallet-paid" placeholder="Amount paid via e-wallet" oninput="checkEwalletAmt()">
+                  <span id="ewallet-warn" style="font-size:10px;color:var(--danger);font-weight:700;white-space:nowrap;display:none">⚠️ Short!</span>
+                </div>
+              </div>
+
+              <!-- Cash -->
+              <div style="display:flex;gap:6px;margin-bottom:8px" id="cash-in-wrap">
                 <input type="number" class="fi" id="cash-in" placeholder="Cash tendered" oninput="calcChange()">
                 <span style="font-size:12px;padding:8px 0;color:var(--text-secondary);white-space:nowrap;font-weight:600">Chg: <span id="chg" style="color:var(--text-primary);font-weight:800">₱0.00</span></span>
               </div>
