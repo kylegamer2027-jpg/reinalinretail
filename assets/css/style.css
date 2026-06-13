@@ -475,13 +475,13 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
     font-weight: 800;
   }
 }/* ─── INVENTORY TABLE SCROLL ─── */
-#pg-inventory .card {
-  max-height: calc(100vh - 280px);
+#pg-inventory #inv-tbl-wrap {
+  max-height: calc(100vh - 320px);
   overflow-y: auto;
   overflow-x: auto;
 }
 
-#pg-inventory .tbl thead th {
+#pg-inventory #inv-tbl-wrap .tbl thead th {
   position: sticky;
   top: 0;
   background: var(--bg-primary);
