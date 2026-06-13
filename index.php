@@ -224,7 +224,7 @@
       <option value="">All status</option><option value="low">Low stock</option><option value="out">Out of stock</option>
     </select>
   </div>
- <div class="card" style="padding:0;"><div style="overflow-x:auto;max-height:500px;overflow-y:auto;"><table class="tbl" id="inv-tbl"></table></div></div>
+ <div class="card" style="padding:0;"><div style="overflow-x:auto;max-height:450px;overflow-y:auto;"><table class="tbl" id="inv-tbl"></table></div></div>
 
   <!-- Restock History -->
   <div class="card" style="margin-top:14px">
@@ -234,8 +234,8 @@
         <i class="ti ti-refresh"></i>Refresh
       </button>
     </div>
-    <div style="overflow-x:auto">
-      <table class="tbl" id="restock-log-tbl">
+    <div style="overflow-x:auto;max-height:300px;overflow-y:auto;">
+      <table class="tbl" id="restock-log-tbl"></table>
         <thead>
           <tr>
             <th>Product</th>

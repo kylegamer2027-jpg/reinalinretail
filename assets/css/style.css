@@ -474,25 +474,6 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
     margin-top: 6px;
     font-weight: 800;
   }
-}/* ─── INVENTORY TABLE SCROLL ─── */
-#pg-inventory #inv-tbl-wrap {
-  max-height: none;
-  height: auto;
-  overflow-y: visible;
-  overflow-x: auto;
-}
-
-#pg-inventory #inv-tbl-wrap .tbl thead th {
-  position: sticky;
-  top: 0;
-  background: var(--bg-primary);
-  z-index: 1;
-}
-
-#pg-inventory .card {
-  max-height: calc(100vh - 280px);
-  overflow-y: auto;
-  overflow-x: auto;
 }
 
 #pg-inventory .tbl thead th {
@@ -505,11 +486,4 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
 /* ─── RESTOCK HISTORY SCROLL ─── */
 #restock-log-tbl {
   width: 100%;
-}
-
-#pg-inventory .card .tbl thead th {
-  position: sticky;
-  top: 0;
-  background: var(--bg-primary);
-  z-index: 1;
 }
