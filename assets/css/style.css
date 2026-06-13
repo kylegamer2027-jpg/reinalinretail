@@ -476,8 +476,9 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
   }
 }/* ─── INVENTORY TABLE SCROLL ─── */
 #pg-inventory #inv-tbl-wrap {
-  max-height: 55vh;
-  overflow-y: auto;
+  max-height: none;
+  height: auto;
+  overflow-y: visible;
   overflow-x: auto;
 }
 
