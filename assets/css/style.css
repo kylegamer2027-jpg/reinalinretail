@@ -504,15 +504,5 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
 
 /* ─── RESTOCK HISTORY SCROLL ─── */
 #restock-log-tbl {
-  display: block;
-  max-height: 300px;
-  overflow-y: auto;
   width: 100%;
-}
-
-#restock-log-tbl thead tr {
-  position: sticky;
-  top: 0;
-  background: var(--bg-primary);
-  z-index: 1;
 }
