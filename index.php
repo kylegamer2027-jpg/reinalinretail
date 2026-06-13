@@ -553,6 +553,9 @@
     <i class="ti ti-x"></i>Close
   </button>
 </div>
+  </div>
+</div>
+</div>
 
 <!-- Add product -->
 <div class="modalbg" id="modal-add-prod">
