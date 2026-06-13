@@ -506,3 +506,10 @@ mark{background:rgba(232,112,10,.2);color:inherit;border-radius:2px;padding:0 2p
 #restock-log-tbl {
   width: 100%;
 }
+
+#pg-inventory .card .tbl thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg-primary);
+  z-index: 1;
+}
